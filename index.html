@@ -194,6 +194,25 @@
         .tab-button:hover {
             background: rgba(59, 130, 246, 0.1);
         }
+
+        .list-unstyled {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .list-unstyled li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .green {
+            color: #10b981;
+        }
+        
+        .red {
+            color: #ef4444;
+        }
     </style>
 </head>
 <body class="min-h-screen p-4">
@@ -328,47 +347,68 @@
             </form>
             
             <div id="accountResult" class="mt-6 p-4 rounded-xl hidden" role="alert">
-    <!-- Success Table (hidden by default) -->
-    <div id="successTable" class="hidden">
-        <div class="bg-green-900 bg-opacity-50 backdrop-blur-sm rounded-xl p-4">
-            <h3 class="text-lg font-semibold text-green-200 mb-4 text-center">Valid Bank Account</h3>
-            <table class="w-full text-sm text-left text-slate-300 border-separate border-spacing-y-2">
-                <thead class="text-xs uppercase text-green-100">
-                    <tr>
-                        <th class="py-2 px-4 text-right font-medium">Field</th>
-                        <th class="py-2 px-4">Value</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="bg-slate-800 bg-opacity-50 rounded-lg">
-                        <th class="py-3 px-4 text-right font-medium text-slate-300">Bank Name</th>
-                        <td id="bankNameValue" class="py-3 px-4 font-semibold text-green-200">Loading...</td>
-                    </tr>
-                    <tr class="bg-slate-800 bg-opacity-50 rounded-lg">
-                        <th class="py-3 px-4 text-right font-medium text-slate-300">Bank Address</th>
-                        <td id="bankAddressValue" class="py-3 px-4 text-slate-200">Loading...</td>
-                    </tr>
-                    <tr class="bg-slate-800 bg-opacity-50 rounded-lg">
-                        <th class="py-3 px-4 text-right font-medium text-slate-300">ACH Transfer</th>
-                        <td id="achValue" class="py-3 px-4 text-green-400">
-                            <i class="fas fa-check-circle mr-2"></i>Supported
-                        </td>
-                    </tr>
-                    <tr class="bg-slate-800 bg-opacity-50 rounded-lg">
-                        <th class="py-3 px-4 text-right font-medium text-slate-300">Wire Transfer</th>
-                        <td id="wireValue" class="py-3 px-4 text-green-400">
-                            <i class="fas fa-check-circle mr-2"></i>Supported
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                <!-- Validation Steps (shown for all results) -->
+                <div id="validationSteps" class="mb-4 p-3 bg-slate-800 bg-opacity-50 rounded-lg hidden">
+                    <table class="w-full">
+                        <tr>
+                            <td colspan="2">
+                                <ul class="list-unstyled">
+                                    <li id="routingStep">
+                                        <i class="fas fa-check-circle green mr-2" id="routingStepIcon"></i>
+                                        <span id="routingStepText">Routing Number validation</span>
+                                    </li>
+                                    <li id="accountStep">
+                                        <i class="fas fa-check-circle green mr-2" id="accountStepIcon"></i>
+                                        <span id="accountStepText">Account Number validation</span>
+                                    </li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <!-- Success Table (hidden by default) -->
+                <div id="successTable" class="hidden">
+                    <div class="bg-green-900 bg-opacity-50 backdrop-blur-sm rounded-xl p-4">
+                        <h3 class="text-lg font-semibold text-green-200 mb-4 text-center">Valid Bank Account</h3>
+                        <table class="w-full text-sm text-left text-slate-300 border-separate border-spacing-y-2">
+                            <thead class="text-xs uppercase text-green-100">
+                                <tr>
+                                    <th class="py-2 px-4 text-right font-medium">Field</th>
+                                    <th class="py-2 px-4">Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="bg-slate-800 bg-opacity-50 rounded-lg">
+                                    <th class="py-3 px-4 text-right font-medium text-slate-300">Bank Name</th>
+                                    <td id="bankNameValue" class="py-3 px-4 font-semibold text-green-200">Loading...</td>
+                                </tr>
+                                <tr class="bg-slate-800 bg-opacity-50 rounded-lg">
+                                    <th class="py-3 px-4 text-right font-medium text-slate-300">Bank Address</th>
+                                    <td id="bankAddressValue" class="py-3 px-4 text-slate-200">Loading...</td>
+                                </tr>
+                                <tr class="bg-slate-800 bg-opacity-50 rounded-lg">
+                                    <th class="py-3 px-4 text-right font-medium text-slate-300">ACH Transfer</th>
+                                    <td id="achValue" class="py-3 px-4 text-green-400">
+                                        <i class="fas fa-check-circle mr-2"></i>Supported
+                                    </td>
+                                </tr>
+                                <tr class="bg-slate-800 bg-opacity-50 rounded-lg">
+                                    <th class="py-3 px-4 text-right font-medium text-slate-300">Wire Transfer</th>
+                                    <td id="wireValue" class="py-3 px-4 text-green-400">
+                                        <i class="fas fa-check-circle mr-2"></i>Supported
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Error Message (fallback for invalid) -->
+                <div id="errorMessage" class="bg-red-900 text-red-200 p-4 rounded-xl text-center font-medium hidden"></div>
+            </div>
         </div>
     </div>
-    <!-- Error Message List (hidden by default) -->
-    <div id="errorMessage" class="bg-red-900 bg-opacity-50 backdrop-blur-sm rounded-xl p-4 hidden">
-        <ul id="errorList" class="list-unstyled text-red-200 text-sm"></ul>
-    </div>
-</div>
 
     <div class="footer flex justify-center space-x-6 text-slate-400 z-10">
         <a href="#" class="policy-link" onclick="showPrivacyPolicy()">
@@ -448,7 +488,7 @@
                 <p>Our site may contain links to third-party websites. We are not responsible for the privacy policies or practices of other websites. Please review their policies before providing any personal information.</p>
 
                 <h4 class="font-semibold text-white mt-4">9. Changes to This Privacy Policy</h4>
-                <p>We may update this Privacy Policy as needed to reflect changes in the law, technology, or our practices. Any updates will be posted here with the “Last Updated” date revised.</p>
+                <p>We may update this Privacy Policy as needed to reflect changes in the law, technology, or our practices. Any updates will be posted here with the "Last Updated" date revised.</p>
 
                 <h4 class="font-semibold text-white mt-4">11. Contact Us</h4>
                 <p>If you have questions about this Privacy Policy, please contact us:</p>
@@ -499,7 +539,7 @@
                 <p>We are not responsible for decisions you make based on our validation tool.</p>
                 
                 <h4 class="font-semibold text-white mt-4">6. Disclaimer of Warranties</h4>
-         <p>The website is provided “as is” and “as available.”</p>
+         <p>The website is provided "as is" and "as available."</p>
                 <p>We do not guarantee uninterrupted access or error-free results.</p>
                 <p>We make no warranties about accuracy, reliability, or fitness for a particular purpose.</p>
                 <p>You use the site at your own risk.</p>
@@ -531,387 +571,400 @@
     </div>
 
     <script>
-    // Tab switching
-    function switchTab(tabName) {
-        // Hide all tabs
-        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-        
-        // Show selected tab
-        document.getElementById(tabName + '-tab').classList.add('active');
-        event.target.classList.add('active');
-    }
-
-    // Account Validator Script
-    const validateAccountBtn = document.getElementById('validateAccountBtn');
-    const clearAccountBtn = document.getElementById('clearAccountBtn');
-    const routingInput = document.getElementById('routingNumber');
-    const accountInput = document.getElementById('accountNumber');
-    const accountResultDiv = document.getElementById('accountResult');
-    const accountSearchingText = document.getElementById('accountSearchingText');
-    const accountSpinner = document.getElementById('accountSpinner');
-    const validateAccountText = document.getElementById('validateAccountText');
-
-    // Luhn algorithm for account number validation
-    function luhnCheck(number) {
-        number = number.replace(/\s/g, '');
-        let sum = 0;
-        let isEven = false;
-        
-        for (let i = number.length - 1; i >= 0; i--) {
-            let digit = parseInt(number[i]);
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
             
-            if (isEven) {
-                digit *= 2;
-                if (digit > 9) digit -= 9;
-            }
-            
-            sum += digit;
-            isEven = !isEven;
-        }
-        
-        return sum % 10 === 0;
-    }
-
-    // Function to handle account validation
-    async function validateAccount() {
-        const routing = routingInput.value.trim();
-        const account = accountInput.value.trim();
-
-        // Reset UI
-        validateAccountText.textContent = 'Validating';
-        accountSpinner.classList.remove('hidden');
-        accountSearchingText.classList.remove('hidden');
-        accountResultDiv.classList.remove('hidden');
-        document.getElementById('successTable').classList.add('hidden');
-        document.getElementById('errorMessage').classList.add('hidden');
-
-        // Validate inputs
-        if (!routing || !account) {
-            document.getElementById('errorMessage').classList.remove('hidden');
-            document.getElementById('errorList').innerHTML = `
-                <li><img src="/static/img/cancel.svg" class="inline-block w-4 h-4 mr-2">${!routing ? 'Please enter a routing number' : 'Please enter an account number'}</li>
-            `;
-            validateAccountText.textContent = 'Validate Account';
-            accountSpinner.classList.add('hidden');
-            accountSearchingText.classList.add('hidden');
-            return;
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
         }
 
-        // Validate account number format (6-17 digits and Luhn check)
-        const isAccountValid = account.length >= 6 && account.length <= 17 && luhnCheck(account);
-        
-        // Validate routing number via API
-        try {
-            const response = await fetch('/api/validate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ routingNumber: routing, accountNumber: account })
-            });
-            const data = await response.json();
+        // Account Validator Script (from index.html)
+        const validateAccountBtn = document.getElementById('validateAccountBtn');
+        const clearAccountBtn = document.getElementById('clearAccountBtn');
+        const routingInput = document.getElementById('routingNumber');
+        const accountInput = document.getElementById('accountNumber');
+        const accountResultDiv = document.getElementById('accountResult');
+        const accountSearchingText = document.getElementById('accountSearchingText');
+        const accountSpinner = document.getElementById('accountSpinner');
+        const validateAccountText = document.getElementById('validateAccountText');
 
-            accountSearchingText.classList.add('hidden');
+        // Function to handle account validation
+        async function validateAccount() {
+            const routing = routingInput.value.trim();
+            const account = accountInput.value.trim();
 
-            if (data.valid) {
-                // Both routing and account are valid
-                document.getElementById('errorMessage').classList.add('hidden');
-                document.getElementById('successTable').classList.remove('hidden');
-                document.getElementById('bankNameValue').textContent = data.bankName;
-                document.getElementById('bankAddressValue').textContent = data.address;
-            } else {
-                // Show error list
+            if (!routing || !account) {
                 document.getElementById('errorMessage').classList.remove('hidden');
-                let errorList = '';
-                if (data.routingValid) {
-                    errorList += `<li><img src="/static/img/check.svg" class="inline-block w-4 h-4 mr-2">Routing Number is valid</li>`;
-                } else {
-                    errorList += `<li><img src="/static/img/cancel.svg" class="inline-block w-4 h-4 mr-2">No Routing Data Found</li>`;
-                }
-                errorList += `<li><img src="/static/img/${isAccountValid ? 'check' : 'cancel'}.svg" class="inline-block w-4 h-4 mr-2">Account Number format is ${isAccountValid ? 'correct' : 'not correct'}</li>`;
-                document.getElementById('errorList').innerHTML = errorList;
+                document.getElementById('errorMessage').innerHTML = 'Please enter both numbers.';
+                accountResultDiv.classList.remove('hidden');
+                document.getElementById('validationSteps').classList.add('hidden');
+                document.getElementById('successTable').classList.add('hidden');
+                return;
             }
-        } catch (error) {
-            document.getElementById('errorMessage').classList.remove('hidden');
-            document.getElementById('errorList').innerHTML = `<li><img src="/static/img/cancel.svg" class="inline-block w-4 h-4 mr-2">Error: Could not connect to server</li>`;
-            console.error(error);
-        } finally {
-            validateAccountText.textContent = 'Validate Account';
-            accountSpinner.classList.add('hidden');
-            accountSearchingText.classList.add('hidden');
-        }
-    }
 
-    validateAccountBtn.addEventListener('click', validateAccount);
+            // Reset validation steps
+            document.getElementById('validationSteps').classList.remove('hidden');
+            document.getElementById('routingStepIcon').className = 'fas fa-check-circle green mr-2';
+            document.getElementById('accountStepIcon').className = 'fas fa-check-circle green mr-2';
 
-    // Enter key support on inputs
-    routingInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            validateAccount();
-        }
-    });
-
-    accountInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            validateAccount();
-        }
-    });
-
-    clearAccountBtn.addEventListener('click', () => {
-        routingInput.value = '';
-        accountInput.value = '';
-        accountResultDiv.classList.add('hidden');
-        accountSearchingText.classList.add('hidden');
-        document.getElementById('successTable').classList.add('hidden');
-        document.getElementById('errorMessage').classList.add('hidden');
-    });
-
-    // Card Validator Script
-    const cardNumberInput = document.getElementById('cardNumber');
-    const cardIcon = document.getElementById('cardIcon');
-    const validateBtn = document.getElementById('validateBtn');
-    const validateText = document.getElementById('validateText');
-    const spinner = document.getElementById('spinner');
-    const resultDiv = document.getElementById('result');
-    const searchingText = document.getElementById('searchingText');
-    
-    // Variables for validation timeout
-    let validationTimeout = null;
-    let isSearching = false;
-    
-    // Card patterns
-    const cardPatterns = {
-        visa: /^4[0-9]{12}(?:[0-9]{3})?$/,
-        mastercard: /^5[1-5][0-9]{14}$/,
-        amex: /^3[47][0-9]{13}$/,
-        discover: /^6(?:011|5[0-9]{2})[0-9]{12}$/,
-        'diners club': /^3(?:0[0-5]|[68][0-9])[0-9]{11}$/,
-        unionpay: /^62[0-9]{14,17}$/,
-        'carte blanche': /^389[0-9]{11}$/,
-        enroute: /^(2014|2149)[0-9]{11}$/,
-        jcb: /^(?:2131|1800|35\d{3})\d{11}$/,
-        maestro: /^(5018|5020|5038|6304|6759|6761|6763)[0-9]{8,15}$/,
-        solo: /^(6334|6767)[0-9]{12,15}$/,
-        switch: /^(4903|4905|4911|4936|6333|6759)[0-9]{12,15}$/,
-        'visa electron': /^(4026|417500|4508|4844|4913|4917)[0-9]{12}$/,
-        star: /^(5610|560221|560222|560223|560224|560225)[0-9]{10}$/,
-        nyce: /^(6011|6012|6506)[0-9]{12}$/,
-        accel: /^(6011|6012|6506)[0-9]{12}$/
-    };
-    
-    // Format card number with spaces
-    function formatCardNumber(value) {
-        const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
-        const matches = v.match(/\d{4,16}/g);
-        const match = matches && matches[0] || '';
-        const parts = [];
-        
-        for (let i = 0, len = match.length; i < len; i += 4) {
-            parts.push(match.substring(i, i + 4));
-        }
-        
-        if (parts.length) {
-            return parts.join(' ');
-        } else {
-            return value;
-        }
-    }
-    
-    // Detect card type
-    function detectCardType(number) {
-        number = number.replace(/\s/g, '');
-        
-        for (const [type, pattern] of Object.entries(cardPatterns)) {
-            if (pattern.test(number)) {
-                return type;
-            }
-        }
-        
-        return 'unknown';
-    }
-    
-    // Update card UI based on type
-    function updateCardUI(type) {
-        switch(type) {
-            case 'visa':
-                cardIcon.innerHTML = '<i class="fab fa-cc-visa text-xl"></i>';
-                cardIcon.className = 'absolute right-3 top-1/2 transform -translate-y-1/2 text-[#1A3C87]';
-                break;
-            case 'mastercard':
-                cardIcon.innerHTML = '<i class="fab fa-cc-mastercard text-xl"></i>';
-                cardIcon.className = 'absolute right-3 top-1/2 transform -translate-y-1/2 text-[#CC0000]';
-                break;
-            case 'amex':
-                cardIcon.innerHTML = '<i class="fab fa-cc-amex text-xl"></i>';
-                cardIcon.className = 'absolute right-3 top-1/2 transform -translate-y-1/2 text-[#006D5D]';
-                break;
-            case 'discover':
-                cardIcon.innerHTML = '<i class="fab fa-cc-discover text-xl"></i>';
-                cardIcon.className = 'absolute right-3 top-1/2 transform -translate-y-1/2 text-[#F28C38]';
-                break;
-            default:
-                cardIcon.innerHTML = '<i class="fas fa-credit-card"></i>';
-                cardIcon.className = 'absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400';
-        }
-    }
-    
-    // Luhn algorithm validation
-    function luhnCheck(number) {
-        number = number.replace(/\s/g, '');
-        let sum = 0;
-        let isEven = false;
-        
-        for (let i = number.length - 1; i >= 0; i--) {
-            let digit = parseInt(number[i]);
+            // Validate account number format (6-17 digits)
+            const accountRegex = /^\d{6,17}$/;
+            const isAccountValid = accountRegex.test(account);
             
-            if (isEven) {
-                digit *= 2;
-                if (digit > 9) digit -= 9;
-            }
-            
-            sum += digit;
-            isEven = !isEven;
-        }
-        
-        return sum % 10 === 0;
-    }
-    
-    // Validate card automatically with delay
-    function validateCardWithDelay() {
-        if (validationTimeout) {
-            clearTimeout(validationTimeout);
-        }
-        
-        const cardNumber = cardNumberInput.value.replace(/\s/g, '');
-        
-        if (!cardNumber) {
-            resultDiv.classList.add('hidden');
-            searchingText.classList.add('hidden');
-            isSearching = false;
-            return;
-        }
-        
-        // Only validate when we have 15 or 16 digits
-        if (cardNumber.length !== 15 && cardNumber.length !== 16) {
-            resultDiv.classList.add('hidden');
-            searchingText.classList.add('hidden');
-            isSearching = false;
-            return;
-        }
-        
-        // Show searching state
-        isSearching = true;
-        searchingText.classList.remove('hidden');
-        resultDiv.classList.add('hidden');
-        
-        // Set timeout to simulate validation process
-        validationTimeout = setTimeout(() => {
-            const cardType = detectCardType(cardNumber);
-            
-            let isValid = true;
-            let errors = [];
-            
-            if (cardType === 'unknown') {
-                errors.push('Invalid card number');
-                isValid = false;
-            } else if (cardNumber.length < 13) {
-                errors.push('Card number is too short');
-                isValid = false;
-            } else if (!luhnCheck(cardNumber)) {
-                errors.push('Invalid card number');
-                isValid = false;
-            }
-            
-            // Show result
-            if (isValid) {
-                const displayName = cardType.split(' ')
-                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                    .join(' ');
-                resultDiv.textContent = `Valid ${displayName} Card`;
-                resultDiv.className = 'mt-6 p-4 rounded-xl text-center font-medium text-lg bg-green-900 bg-opacity-30 text-green-400';
+            // Show account validation status immediately
+            if (isAccountValid) {
+                document.getElementById('accountStepIcon').className = 'fas fa-check-circle green mr-2';
+                document.getElementById('accountStepText').textContent = 'Account Number format is correct';
             } else {
-                resultDiv.innerHTML = errors.join('<br>');
-                resultDiv.className = 'mt-6 p-4 rounded-xl text-center font-medium text-lg bg-red-900 bg-opacity-30 text-red-400';
+                document.getElementById('accountStepIcon').className = 'fas fa-times-circle red mr-2';
+                document.getElementById('accountStepText').textContent = 'Account Number format is not correct';
+            }
+
+            // Show loading
+            validateAccountText.textContent = 'Validating';
+            accountSpinner.classList.remove('hidden');
+            accountSearchingText.classList.remove('hidden');
+            accountResultDiv.classList.remove('hidden');
+
+            try {
+                const response = await fetch('/api/validate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ routingNumber: routing, accountNumber: account })
+                });
+                const data = await response.json();
+
+                accountSearchingText.classList.add('hidden');
+
+                // Update routing validation status
+                if (data.routingValid) {
+                    document.getElementById('routingStepIcon').className = 'fas fa-check-circle green mr-2';
+                    document.getElementById('routingStepText').textContent = 'Routing Number is valid';
+                } else {
+                    document.getElementById('routingStepIcon').className = 'fas fa-times-circle red mr-2';
+                    document.getElementById('routingStepText').textContent = 'No Routing Data Found';
+                }
+
+                if (data.valid && isAccountValid) {
+                    // Hide error, show success table
+                    document.getElementById('errorMessage').classList.add('hidden');
+                    document.getElementById('successTable').classList.remove('hidden');
+                    
+                    // Populate table values
+                    document.getElementById('bankNameValue').textContent = data.bankName;
+                    document.getElementById('bankAddressValue').textContent = data.address;
+                } else {
+                    // Hide table, show error if needed
+                    document.getElementById('successTable').classList.add('hidden');
+                    
+                    // Only show error message if both validations failed
+                    if (!data.routingValid && !isAccountValid) {
+                        document.getElementById('errorMessage').classList.remove('hidden');
+                        document.getElementById('errorMessage').innerHTML = `
+                            <ul class="list-unstyled text-left">
+                                <li><i class="fas fa-times-circle red mr-2"></i> No Routing Data Found</li>
+                                <li><i class="fas fa-times-circle red mr-2"></i> Account Number format is not correct</li>
+                            </ul>
+                        `;
+                    } else {
+                        document.getElementById('errorMessage').classList.add('hidden');
+                    }
+                }
+            } catch (error) {
+                accountSearchingText.classList.add('hidden');
+                document.getElementById('successTable').classList.add('hidden');
+                document.getElementById('errorMessage').classList.remove('hidden');
+                document.getElementById('errorMessage').textContent = 'Error: Could not connect to server. Check console for details.';
+                console.error(error);
+            } finally {
+                // Reset button
+                validateAccountText.textContent = 'Validate Account';
+                accountSpinner.classList.add('hidden');
+            }
+        }
+
+        validateAccountBtn.addEventListener('click', validateAccount);
+
+        // Enter key support on inputs
+        routingInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                validateAccount();
+            }
+        });
+
+        accountInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                validateAccount();
+            }
+        });
+
+        clearAccountBtn.addEventListener('click', () => {
+            routingInput.value = '';
+            accountInput.value = '';
+            accountResultDiv.classList.add('hidden');
+            accountSearchingText.classList.add('hidden');
+            document.getElementById('successTable').classList.add('hidden');
+            document.getElementById('errorMessage').classList.add('hidden');
+            document.getElementById('validationSteps').classList.add('hidden');
+        });
+
+        // Card Validator Script (Updated to match the provided design)
+        const cardNumberInput = document.getElementById('cardNumber');
+        const cardIcon = document.getElementById('cardIcon');
+        const validateBtn = document.getElementById('validateBtn');
+        const validateText = document.getElementById('validateText');
+        const spinner = document.getElementById('spinner');
+        const resultDiv = document.getElementById('result');
+        const searchingText = document.getElementById('searchingText');
+        
+        // Variables for validation timeout
+        let validationTimeout = null;
+        let isSearching = false;
+        
+        // Card patterns
+        const cardPatterns = {
+            visa: /^4[0-9]{12}(?:[0-9]{3})?$/,
+            mastercard: /^5[1-5][0-9]{14}$/,
+            amex: /^3[47][0-9]{13}$/,
+            discover: /^6(?:011|5[0-9]{2})[0-9]{12}$/,
+            'diners club': /^3(?:0[0-5]|[68][0-9])[0-9]{11}$/,
+            unionpay: /^62[0-9]{14,17}$/,
+            'carte blanche': /^389[0-9]{11}$/,
+            enroute: /^(2014|2149)[0-9]{11}$/,
+            jcb: /^(?:2131|1800|35\d{3})\d{11}$/,
+            maestro: /^(5018|5020|5038|6304|6759|6761|6763)[0-9]{8,15}$/,
+            solo: /^(6334|6767)[0-9]{12,15}$/,
+            switch: /^(4903|4905|4911|4936|6333|6759)[0-9]{12,15}$/,
+            'visa electron': /^(4026|417500|4508|4844|4913|4917)[0-9]{12}$/,
+            star: /^(5610|560221|560222|560223|560224|560225)[0-9]{10}$/,
+            nyce: /^(6011|6012|6506)[0-9]{12}$/,
+            accel: /^(6011|6012|6506)[0-9]{12}$/
+        };
+        
+        // Format card number with spaces
+        function formatCardNumber(value) {
+            const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            const matches = v.match(/\d{4,16}/g);
+            const match = matches && matches[0] || '';
+            const parts = [];
+            
+            for (let i = 0, len = match.length; i < len; i += 4) {
+                parts.push(match.substring(i, i + 4));
             }
             
-            resultDiv.classList.remove('hidden');
+            if (parts.length) {
+                return parts.join(' ');
+            } else {
+                return value;
+            }
+        }
+        
+        // Detect card type
+        function detectCardType(number) {
+            number = number.replace(/\s/g, '');
+            
+            for (const [type, pattern] of Object.entries(cardPatterns)) {
+                if (pattern.test(number)) {
+                    return type;
+                }
+            }
+            
+            return 'unknown';
+        }
+        
+        // Update card UI based on type
+        function updateCardUI(type) {
+            // Set specific styles based on card type
+            switch(type) {
+                case 'visa':
+                    cardIcon.innerHTML = '<i class="fab fa-cc-visa text-xl"></i>';
+                    cardIcon.className = 'absolute right-3 top-1/2 transform -translate-y-1/2 text-[#1A3C87]';
+                    break;
+                case 'mastercard':
+                    cardIcon.innerHTML = '<i class="fab fa-cc-mastercard text-xl"></i>';
+                    cardIcon.className = 'absolute right-3 top-1/2 transform -translate-y-1/2 text-[#CC0000]';
+                    break;
+                case 'amex':
+                    cardIcon.innerHTML = '<i class="fab fa-cc-amex text-xl"></i>';
+                    cardIcon.className = 'absolute right-3 top-1/2 transform -translate-y-1/2 text-[#006D5D]';
+                    break;
+                case 'discover':
+                    cardIcon.innerHTML = '<i class="fab fa-cc-discover text-xl"></i>';
+                    cardIcon.className = 'absolute right-3 top-1/2 transform -translate-y-1/2 text-[#F28C38]';
+                    break;
+                default:
+                    cardIcon.innerHTML = '<i class="fas fa-credit-card"></i>';
+                    cardIcon.className = 'absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400';
+            }
+        }
+        
+        // Luhn algorithm validation
+        function luhnCheck(number) {
+            number = number.replace(/\s/g, '');
+            let sum = 0;
+            let isEven = false;
+            
+            for (let i = number.length - 1; i >= 0; i--) {
+                let digit = parseInt(number[i]);
+                
+                if (isEven) {
+                    digit *= 2;
+                    if (digit > 9) digit -= 9;
+                }
+                
+                sum += digit;
+                isEven = !isEven;
+            }
+            
+            return sum % 10 === 0;
+        }
+        
+        // Validate card automatically with delay
+        function validateCardWithDelay() {
+            // Clear any existing timeout
+            if (validationTimeout) {
+                clearTimeout(validationTimeout);
+            }
+            
+            const cardNumber = cardNumberInput.value.replace(/\s/g, '');
+            
+            if (!cardNumber) {
+                // If no card number, clear any validation state
+                resultDiv.classList.add('hidden');
+                searchingText.classList.add('hidden');
+                isSearching = false;
+                return;
+            }
+            
+            // NEW: Only validate when we have 15 or 16 digits
+            if (cardNumber.length !== 15 && cardNumber.length !== 16) {
+                resultDiv.classList.add('hidden');
+                searchingText.classList.add('hidden');
+                isSearching = false;
+                return;
+            }
+            
+            // Show searching state
+            isSearching = true;
+            searchingText.classList.remove('hidden');
+            resultDiv.classList.add('hidden');
+            
+            // Set timeout to simulate validation process
+            validationTimeout = setTimeout(() => {
+                const cardType = detectCardType(cardNumber);
+                
+                let isValid = true;
+                let errors = [];
+                
+                // Check if card type is unknown
+                if (cardType === 'unknown') {
+                    errors.push('Invalid card number');
+                    isValid = false;
+                } else if (cardNumber.length < 13) {
+                    errors.push('Card number is too short');
+                    isValid = false;
+                } else if (!luhnCheck(cardNumber)) {
+                    errors.push('Invalid card number');
+                    isValid = false;
+                }
+                
+                // Show result
+                if (isValid) {
+                    const displayName = cardType.split(' ')
+                        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                        .join(' ');
+                    resultDiv.textContent = `Valid ${displayName} Card`;
+                    resultDiv.className = 'mt-6 p-4 rounded-xl text-center font-medium text-lg bg-green-900 bg-opacity-30 text-green-400';
+                } else {
+                    resultDiv.innerHTML = errors.join('<br>');
+                    resultDiv.className = 'mt-6 p-4 rounded-xl text-center font-medium text-lg bg-red-900 bg-opacity-30 text-red-400';
+                }
+                
+                resultDiv.classList.remove('hidden');
+                searchingText.classList.add('hidden');
+                isSearching = false;
+            }, 1000); // 1 second delay
+        }
+        
+        // Clear form
+        function clearForm() {
+            // Clear any pending validation
+            if (validationTimeout) {
+                clearTimeout(validationTimeout);
+            }
+            
+            cardNumberInput.value = '';
+            resultDiv.classList.add('hidden');
             searchingText.classList.add('hidden');
+            cardIcon.innerHTML = '<i class="fas fa-credit-card"></i>';
+            cardIcon.className = 'absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400';
+            cardNumberInput.focus();
             isSearching = false;
-        }, 1000); // 1 second delay
-    }
-    
-    // Clear form
-    function clearForm() {
-        if (validationTimeout) {
-            clearTimeout(validationTimeout);
         }
         
-        cardNumberInput.value = '';
-        resultDiv.classList.add('hidden');
-        searchingText.classList.add('hidden');
-        cardIcon.innerHTML = '<i class="fas fa-credit-card"></i>';
-        cardIcon.className = 'absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400';
-        cardNumberInput.focus();
-        isSearching = false;
-    }
-    
-    // Event listeners for card validator
-    cardNumberInput.addEventListener('input', (e) => {
-        const formatted = formatCardNumber(e.target.value);
-        e.target.value = formatted;
-        
-        const cardType = detectCardType(formatted);
-        updateCardUI(cardType);
-        
-        validateCardWithDelay();
-    });
-    
-    cardNumberInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
+        // Event listeners for card validator
+        cardNumberInput.addEventListener('input', (e) => {
+            const formatted = formatCardNumber(e.target.value);
+            e.target.value = formatted;
+            
+            const cardType = detectCardType(formatted);
+            updateCardUI(cardType);
+            
+            // Auto-validate as user types with delay
             validateCardWithDelay();
+        });
+        
+        cardNumberInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                validateCardWithDelay();
+            }
+        });
+        
+        validateBtn.addEventListener('click', validateCardWithDelay);
+        
+        // Modal functions
+        function showPrivacyPolicy() {
+            document.getElementById('privacyModal').classList.remove('hidden');
         }
-    });
-    
-    validateBtn.addEventListener('click', validateCardWithDelay);
-    
-    // Modal functions
-    function showPrivacyPolicy() {
-        document.getElementById('privacyModal').classList.remove('hidden');
-    }
-    
-    function showTermsConditions() {
-        document.getElementById('termsModal').classList.remove('hidden');
-    }
-    
-    function closeModal(modalId) {
-        document.getElementById(modalId).classList.add('hidden');
-    }
-    
-    // Close modals when clicking outside
-    window.addEventListener('click', (e) => {
-        if (e.target.id === 'privacyModal') {
-            closeModal('privacyModal');
+        
+        function showTermsConditions() {
+            document.getElementById('termsModal').classList.remove('hidden');
         }
-        if (e.target.id === 'termsModal') {
-            closeModal('termsModal');
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
         }
-    });
-    
-    // Particles animation
-    function createParticles() {
-        const container = document.getElementById('particles-container');
-        for (let i = 0; i < 20; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            particle.style.left = Math.random() * 100 + '%';
-            particle.style.top = Math.random() * 100 + '%';
-            particle.style.width = Math.random() * 4 + 2 + 'px';
-            particle.style.height = particle.style.width;
-            particle.style.animationDelay = Math.random() * 20 + 's';
-            container.appendChild(particle);
+        
+        // Close modals when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target.id === 'privacyModal') {
+                closeModal('privacyModal');
+            }
+            if (e.target.id === 'termsModal') {
+                closeModal('termsModal');
+            }
+        });
+        
+        // Particles animation
+        function createParticles() {
+            const container = document.getElementById('particles-container');
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.width = Math.random() * 4 + 2 + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                container.appendChild(particle);
+            }
         }
-    }
-    createParticles();
-   </script>
+        createParticles();
+    </script>
 </body>
 </html>
