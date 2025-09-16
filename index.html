@@ -267,7 +267,7 @@
 
         <!-- Account Validator Tab -->
         <div id="account-tab" class="tab-content w-full max-w-lg bg-slate-900 bg-opacity-50 backdrop-blur-lg rounded-2xl p-6 shadow-xl z-10 mb-8">
-            <!-- Account Validator Content (from index.html) -->
+            <!-- Account Validator Content -->
             <form id="accountForm" class="space-y-5">
                 <div>
                     <label for="routingNumber" class="block text-sm font-medium text-slate-300 mb-2">Routing Number</label>
@@ -284,6 +284,7 @@
                             <i class="fas fa-university"></i>
                         </div>
                     </div>
+                    <div id="routingResult" class="text-sm mt-2 hidden"></div>
                 </div>
                 <div>
                     <label for="accountNumber" class="block text-sm font-medium text-slate-300 mb-2">Account Number</label>
@@ -300,6 +301,7 @@
                             <i class="fas fa-file-invoice-dollar"></i>
                         </div>
                     </div>
+                    <div id="accountFormatResult" class="text-sm mt-2 hidden"></div>
                     <div id="accountSearchingText" class="text-md font-medium text-slate-300 mt-3 hidden">
                         <span class="searching-animation"></span> Validating
                     </div>
@@ -449,7 +451,7 @@
                 <p>Our site may contain links to third-party websites. We are not responsible for the privacy policies or practices of other websites. Please review their policies before providing any personal information.</p>
 
                 <h4 class="font-semibold text-white mt-4">9. Changes to This Privacy Policy</h4>
-                <p>We may update this Privacy Policy as needed to reflect changes in the law, technology, or our practices. Any updates will be posted here with the “Last Updated” date revised.</p>
+                <p>We may update this Privacy Policy as needed to reflect changes in the law, technology, or our practices. Any updates will be posted here with the "Last Updated" date revised.</p>
 
                 <h4 class="font-semibold text-white mt-4">11. Contact Us</h4>
                 <p>If you have questions about this Privacy Policy, please contact us:</p>
@@ -500,7 +502,7 @@
                 <p>We are not responsible for decisions you make based on our validation tool.</p>
                 
                 <h4 class="font-semibold text-white mt-4">6. Disclaimer of Warranties</h4>
-         <p>The website is provided “as is” and “as available.”</p>
+         <p>The website is provided "as is" and "as available."</p>
                 <p>We do not guarantee uninterrupted access or error-free results.</p>
                 <p>We make no warranties about accuracy, reliability, or fitness for a particular purpose.</p>
                 <p>You use the site at your own risk.</p>
@@ -543,7 +545,7 @@
             event.target.classList.add('active');
         }
 
-        // Account Validator Script (from index.html)
+        // Account Validator Script
         const validateAccountBtn = document.getElementById('validateAccountBtn');
         const clearAccountBtn = document.getElementById('clearAccountBtn');
         const routingInput = document.getElementById('routingNumber');
@@ -552,41 +554,67 @@
         const accountSearchingText = document.getElementById('accountSearchingText');
         const accountSpinner = document.getElementById('accountSpinner');
         const validateAccountText = document.getElementById('validateAccountText');
+        const routingResultDiv = document.getElementById('routingResult');
+        const accountFormatResultDiv = document.getElementById('accountFormatResult');
+
+        // Function to validate routing number
+        function validateRoutingNumber(routing) {
+            // This is a simplified validation - in a real app, you would check against a database
+            // For this example, we'll assume routing numbers starting with 0, 1, 2, or 3 are valid
+            if (routing.length !== 9 || !/^\d+$/.test(routing)) {
+                return { valid: false, message: "Routing number must be 9 digits" };
+            }
+            
+            // Simulate checking against a database
+            // In a real application, this would be an API call to your backend
+            const validRoutingNumbers = ["021000021", "091000019", "121000248", "122000661", "123000220"];
+            
+            if (validRoutingNumbers.includes(routing)) {
+                return { valid: true, message: "Routing Number is valid" };
+            } else {
+                return { valid: false, message: "No Routing Data Found" };
+            }
+        }
+
+        // Function to validate account number format
+        function validateAccountNumberFormat(account) {
+            // Account number must be between 6 and 17 digits
+            if (account.length < 6 || account.length > 17 || !/^\d+$/.test(account)) {
+                return { valid: false, message: "Account Number format is not correct" };
+            } else {
+                return { valid: true, message: "Account Number format is correct" };
+            }
+        }
 
         // Function to handle account validation
-                async function validateAccount() {
+        async function validateAccount() {
             const routing = routingInput.value.trim();
             const account = accountInput.value.trim();
 
-            if (!routing || !account) {
-                document.getElementById('errorMessage').classList.remove('hidden');
-                document.getElementById('successTable').classList.add('hidden');
-                document.getElementById('errorMessage').innerHTML = 'Please enter both numbers.';
-                accountResultDiv.classList.remove('hidden');
+            // Reset previous results
+            routingResultDiv.classList.add('hidden');
+            accountFormatResultDiv.classList.add('hidden');
+            accountResultDiv.classList.add('hidden');
+            document.getElementById('successTable').classList.add('hidden');
+            document.getElementById('errorMessage').classList.add('hidden');
+
+            // Validate routing number
+            const routingValidation = validateRoutingNumber(routing);
+            routingResultDiv.textContent = routingValidation.message;
+            routingResultDiv.className = `text-sm mt-2 ${routingValidation.valid ? 'text-green-400' : 'text-red-400'}`;
+            routingResultDiv.classList.remove('hidden');
+
+            // Validate account number format
+            const accountValidation = validateAccountNumberFormat(account);
+            accountFormatResultDiv.textContent = accountValidation.message;
+            accountFormatResultDiv.className = `text-sm mt-2 ${accountValidation.valid ? 'text-green-400' : 'text-red-400'}`;
+            accountFormatResultDiv.classList.remove('hidden');
+
+            // If either is invalid, stop here
+            if (!routingValidation.valid || !accountValidation.valid) {
                 return;
             }
 
-            // NEW: Local validation for account number (6-17 digits, digits only, Luhn check)
-            const accountNum = account.replace(/[^0-9]/g, ''); // Remove non-digits
-            if (accountNum.length < 6 || accountNum.length > 17 || account !== accountNum) {
-                document.getElementById('errorMessage').classList.remove('hidden');
-                document.getElementById('successTable').classList.add('hidden');
-                document.getElementById('errorMessage').innerHTML = 'Account Number format is not correct';
-                accountResultDiv.classList.remove('hidden');
-                accountSearchingText.classList.add('hidden');
-                return;
-            }
-
-            if (!luhnCheck(accountNum)) {
-                document.getElementById('errorMessage').classList.remove('hidden');
-                document.getElementById('successTable').classList.add('hidden');
-                document.getElementById('errorMessage').innerHTML = 'Account Number format is not correct';
-                accountResultDiv.classList.remove('hidden');
-                accountSearchingText.classList.add('hidden');
-                return;
-            }
-
-            // If account is okay, proceed to API for routing check
             // Show loading
             validateAccountText.textContent = 'Validating';
             accountSpinner.classList.remove('hidden');
@@ -594,12 +622,10 @@
             accountResultDiv.classList.remove('hidden');
 
             try {
-                const response = await fetch('/api/validate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ routingNumber: routing, accountNumber: account })
-                });
-                const data = await response.json();
+                // This would be your actual API call
+                // For demonstration, we're simulating a response
+                const response = await simulateApiCall(routing, account);
+                const data = response;
 
                 accountSearchingText.classList.add('hidden');
 
@@ -615,7 +641,7 @@
                     // Hide table, show error
                     document.getElementById('successTable').classList.add('hidden');
                     document.getElementById('errorMessage').classList.remove('hidden');
-                    document.getElementById('errorMessage').textContent = 'No Routing Data Found';
+                    document.getElementById('errorMessage').textContent = 'No Data Found';
                 }
             } catch (error) {
                 accountSearchingText.classList.add('hidden');
@@ -628,6 +654,33 @@
                 validateAccountText.textContent = 'Validate Account';
                 accountSpinner.classList.add('hidden');
             }
+        }
+
+        // Simulate API call (replace with your actual API endpoint)
+        function simulateApiCall(routing, account) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    // Simulate a response from the server
+                    // In a real application, this would be replaced with fetch()
+                    const bankData = {
+                        "021000021": { bankName: "JPMORGAN CHASE BANK, NA", address: "270 Park Avenue, New York, NY" },
+                        "091000019": { bankName: "WELLS FARGO BANK, NA", address: "420 Montgomery Street, San Francisco, CA" },
+                        "121000248": { bankName: "BANK OF AMERICA, NA", address: "100 North Tryon Street, Charlotte, NC" },
+                        "122000661": { bankName: "CITIBANK, NA", address: "388 Greenwich Street, New York, NY" },
+                        "123000220": { bankName: "CAPITAL ONE, NA", address: "1680 Capital One Drive, McLean, VA" }
+                    };
+
+                    if (bankData[routing]) {
+                        resolve({
+                            valid: true,
+                            bankName: bankData[routing].bankName,
+                            address: bankData[routing].address
+                        });
+                    } else {
+                        resolve({ valid: false });
+                    }
+                }, 1500);
+            });
         }
 
         validateAccountBtn.addEventListener('click', validateAccount);
@@ -650,11 +703,13 @@
             accountInput.value = '';
             accountResultDiv.classList.add('hidden');
             accountSearchingText.classList.add('hidden');
+            routingResultDiv.classList.add('hidden');
+            accountFormatResultDiv.classList.add('hidden');
             document.getElementById('successTable').classList.add('hidden');
             document.getElementById('errorMessage').classList.add('hidden');
         });
 
-        // Card Validator Script (Updated to match the provided design)
+        // Card Validator Script
         const cardNumberInput = document.getElementById('cardNumber');
         const cardIcon = document.getElementById('cardIcon');
         const validateBtn = document.getElementById('validateBtn');
@@ -765,7 +820,7 @@
             return sum % 10 === 0;
         }
         
-                // Validate card automatically with delay
+        // Validate card automatically with delay
         function validateCardWithDelay() {
             // Clear any existing timeout
             if (validationTimeout) {
@@ -782,7 +837,7 @@
                 return;
             }
             
-            // NEW: Only validate when we have 15 or 16 digits
+            // Only validate when we have 15 or 16 digits
             if (cardNumber.length !== 15 && cardNumber.length !== 16) {
                 resultDiv.classList.add('hidden');
                 searchingText.classList.add('hidden');
@@ -805,13 +860,11 @@
                 if (cardNumber.length < 13) {
                     errors.push('Card number is too short');
                     isValid = false;
-                } else if (!luhnCheck(cardNumber)) {
+                } else if (cardType === 'unknown') {
+                    // NEW: Check if card type is unknown
                     errors.push('Invalid card number');
                     isValid = false;
-                }
-                
-                // NEW: If the card type is not one of the supported ones, treat it as invalid
-                if (cardType === 'unknown') {
+                } else if (!luhnCheck(cardNumber)) {
                     errors.push('Invalid card number');
                     isValid = false;
                 }
@@ -833,7 +886,7 @@
                 isSearching = false;
             }, 1000); // 1 second delay
         }
-      
+        
         // Clear form
         function clearForm() {
             // Clear any pending validation
