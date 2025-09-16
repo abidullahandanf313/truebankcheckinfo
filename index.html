@@ -266,112 +266,110 @@
         </div>
 
         <!-- Account Validator Tab -->
-        <div id="account-tab" class="tab-content w-full max-w-lg bg-slate-900 bg-opacity-50 backdrop-blur-lg rounded-2xl p-6 shadow-xl z-10 mb-8">
-            <!-- Account Validator Content -->
-            <form id="accountForm" class="space-y-5">
-                <div>
-                    <label for="routingNumber" class="block text-sm font-medium text-slate-300 mb-2">Routing Number</label>
-                    <div class="relative">
-                        <input 
-                            type="text" 
-                            id="routingNumber" 
-                            maxlength="9" 
-                            class="w-full p-4 input-field rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-0"
-                            placeholder="Enter routing number"
-                            autocomplete="off"
-                        >
-                        <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400" id="routingIcon">
-                            <i class="fas fa-university"></i>
-                        </div>
-                    </div>
-                    <div id="routingResult" class="text-sm mt-2 hidden"></div>
-                </div>
-                <div>
-                    <label for="accountNumber" class="block text-sm font-medium text-slate-300 mb-2">Account Number</label>
-                    <div class="relative">
-                        <input 
-                            type="text" 
-                            id="accountNumber" 
-                            maxlength="17" 
-                            class="w-full p-4 input-field rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-0"
-                            placeholder="Enter account number"
-                            autocomplete="off"
-                        >
-                        <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400" id="accountIcon">
-                            <i class="fas fa-file-invoice-dollar"></i>
-                        </div>
-                    </div>
-                    <div id="accountFormatResult" class="text-sm mt-2 hidden"></div>
-                    <div id="accountSearchingText" class="text-md font-medium text-slate-300 mt-3 hidden">
-                        <span class="searching-animation"></span> Validating
-                    </div>
-                </div>
-                
-                <div class="pt-4 flex gap-4">
-                    <button 
-                        type="button" 
-                        id="validateAccountBtn"
-                        class="flex-1 py-4 btn-primary text-white font-semibold rounded-xl transition-all duration-300 flex items-center justify-center"
-                    >
-                        <span id="validateAccountText">Validate Account</span>
-                        <span id="accountSpinner" class="ml-2 hidden">
-                            <i class="fas fa-spinner fa-spin"></i>
-                        </span>
-                    </button>
-                    
-                    <button 
-                        type="button" 
-                        id="clearAccountBtn"
-                        class="flex-1 py-4 btn-secondary text-white font-semibold rounded-xl transition-all duration-300"
-                    >
-                        Clear
-                    </button>
-                </div>
-            </form>
-            
-            <div id="accountResult" class="mt-6 p-4 rounded-xl hidden" role="alert">
-                <!-- Success Table (hidden by default) -->
-                <div id="successTable" class="hidden">
-                    <div class="bg-green-900 bg-opacity-50 backdrop-blur-sm rounded-xl p-4">
-                        <h3 class="text-lg font-semibold text-green-200 mb-4 text-center">Valid Bank Account</h3>
-                        <table class="w-full text-sm text-left text-slate-300 border-separate border-spacing-y-2">
-                            <thead class="text-xs uppercase text-green-100">
-                                <tr>
-                                    <th class="py-2 px-4 text-right font-medium">Field</th>
-                                    <th class="py-2 px-4">Value</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="bg-slate-800 bg-opacity-50 rounded-lg">
-                                    <th class="py-3 px-4 text-right font-medium text-slate-300">Bank Name</th>
-                                    <td id="bankNameValue" class="py-3 px-4 font-semibold text-green-200">Loading...</td>
-                                </tr>
-                                <tr class="bg-slate-800 bg-opacity-50 rounded-lg">
-                                    <th class="py-3 px-4 text-right font-medium text-slate-300">Bank Address</th>
-                                    <td id="bankAddressValue" class="py-3 px-4 text-slate-200">Loading...</td>
-                                </tr>
-                                <tr class="bg-slate-800 bg-opacity-50 rounded-lg">
-                                    <th class="py-3 px-4 text-right font-medium text-slate-300">ACH Transfer</th>
-                                    <td id="achValue" class="py-3 px-4 text-green-400">
-                                        <i class="fas fa-check-circle mr-2"></i>Supported
-                                    </td>
-                                </tr>
-                                <tr class="bg-slate-800 bg-opacity-50 rounded-lg">
-                                    <th class="py-3 px-4 text-right font-medium text-slate-300">Wire Transfer</th>
-                                    <td id="wireValue" class="py-3 px-4 text-green-400">
-                                        <i class="fas fa-check-circle mr-2"></i>Supported
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                
-                <!-- Error Message (fallback for invalid) -->
-                <div id="errorMessage" class="bg-red-900 text-red-200 p-4 rounded-xl text-center font-medium hidden">No Data Found</div>
-            </div>
+<div id="account-tab" class="tab-content w-full max-w-lg bg-slate-900 bg-opacity-50 backdrop-blur-lg rounded-2xl p-6 shadow-xl z-10 mb-8">
+  <form id="accountForm" class="space-y-5">
+    <div>
+      <label for="routingNumber" class="block text-sm font-medium text-slate-300 mb-2">Routing Number</label>
+      <div class="relative">
+        <input 
+          type="text" 
+          id="routingNumber" 
+          maxlength="9" 
+          class="w-full p-4 input-field rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-0"
+          placeholder="Enter routing number"
+          autocomplete="off"
+        >
+        <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400" id="routingIcon">
+          <i class="fas fa-university"></i>
         </div>
+      </div>
+      <div id="routingValidationResult" class="text-sm mt-2 hidden"></div>
     </div>
+    <div>
+      <label for="accountNumber" class="block text-sm font-medium text-slate-300 mb-2">Account Number</label>
+      <div class="relative">
+        <input 
+          type="text" 
+          id="accountNumber" 
+          maxlength="17" 
+          class="w-full p-4 input-field rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-0"
+          placeholder="Enter account number"
+          autocomplete="off"
+        >
+        <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400" id="accountIcon">
+          <i class="fas fa-file-invoice-dollar"></i>
+        </div>
+      </div>
+      <div id="accountValidationResult" class="text-sm mt-2 hidden"></div>
+      <div id="accountSearchingText" class="text-md font-medium text-slate-300 mt-3 hidden">
+        <span class="searching-animation"></span> Validating
+      </div>
+    </div>
+    
+    <div class="pt-4 flex gap-4">
+      <button 
+        type="button" 
+        id="validateAccountBtn"
+        class="flex-1 py-4 btn-primary text-white font-semibold rounded-xl transition-all duration-300 flex items-center justify-center"
+      >
+        <span id="validateAccountText">Validate Account</span>
+        <span id="accountSpinner" class="ml-2 hidden">
+          <i class="fas fa-spinner fa-spin"></i>
+        </span>
+      </button>
+      
+      <button 
+        type="button" 
+        id="clearAccountBtn"
+        class="flex-1 py-4 btn-secondary text-white font-semibold rounded-xl transition-all duration-300"
+      >
+        Clear
+      </button>
+    </div>
+  </form>
+  
+  <div id="accountResult" class="mt-6 p-4 rounded-xl hidden" role="alert">
+    <!-- Success Table (hidden by default) -->
+    <div id="successTable" class="hidden">
+      <div class="bg-green-900 bg-opacity-50 backdrop-blur-sm rounded-xl p-4">
+        <h3 class="text-lg font-semibold text-green-200 mb-4 text-center">Valid Bank Account</h3>
+        <table class="w-full text-sm text-left text-slate-300 border-separate border-spacing-y-2">
+          <thead class="text-xs uppercase text-green-100">
+            <tr>
+              <th class="py-2 px-4 text-right font-medium">Field</th>
+              <th class="py-2 px-4">Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="bg-slate-800 bg-opacity-50 rounded-lg">
+              <th class="py-3 px-4 text-right font-medium text-slate-300">Bank Name</th>
+              <td id="bankNameValue" class="py-3 px-4 font-semibold text-green-200">Loading...</td>
+            </tr>
+            <tr class="bg-slate-800 bg-opacity-50 rounded-lg">
+              <th class="py-3 px-4 text-right font-medium text-slate-300">Bank Address</th>
+              <td id="bankAddressValue" class="py-3 px-4 text-slate-200">Loading...</td>
+            </tr>
+            <tr class="bg-slate-800 bg-opacity-50 rounded-lg">
+              <th class="py-3 px-4 text-right font-medium text-slate-300">ACH Transfer</th>
+              <td id="achValue" class="py-3 px-4 text-green-400">
+                <i class="fas fa-check-circle mr-2"></i>Supported
+              </td>
+            </tr>
+            <tr class="bg-slate-800 bg-opacity-50 rounded-lg">
+              <th class="py-3 px-4 text-right font-medium text-slate-300">Wire Transfer</th>
+              <td id="wireValue" class="py-3 px-4 text-green-400">
+                <i class="fas fa-check-circle mr-2"></i>Supported
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- Error Message -->
+    <div id="errorMessage" class="bg-red-900 text-red-200 p-4 rounded-xl text-center font-medium hidden"></div>
+  </div>
+</div>
 
     <div class="footer flex justify-center space-x-6 text-slate-400 z-10">
         <a href="#" class="policy-link" onclick="showPrivacyPolicy()">
