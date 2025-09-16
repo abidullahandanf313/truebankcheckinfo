@@ -854,20 +854,32 @@
             validationTimeout = setTimeout(() => {
                 const cardType = detectCardType(cardNumber);
                 
-                let isValid = true;
-                let errors = [];
-                
-                if (cardNumber.length < 13) {
-                    errors.push('Card number is too short');
-                    isValid = false;
-                } else if (cardType === 'unknown') {
-                    // NEW: Check if card type is unknown
-                    errors.push('Invalid card number');
-                    isValid = false;
-                } else if (!luhnCheck(cardNumber)) {
-                    errors.push('Invalid card number');
-                    isValid = false;
-                }
+                // Find this section in your JavaScript:
+let isValid = true;
+let errors = [];
+
+if (cardNumber.length < 13) {
+    errors.push('Card number is too short');
+    isValid = false;
+} else if (!luhnCheck(cardNumber)) {
+    errors.push('Invalid card number');
+    isValid = false;
+}
+
+// Replace it with:
+let isValid = true;
+let errors = [];
+
+if (cardType === 'unknown') {
+    errors.push('Invalid card number');
+    isValid = false;
+} else if (cardNumber.length < 13) {
+    errors.push('Card number is too short');
+    isValid = false;
+} else if (!luhnCheck(cardNumber)) {
+    errors.push('Invalid card number');
+    isValid = false;
+}
                 
                 // Show result
                 if (isValid) {
