@@ -568,6 +568,7 @@
         // Function to handle account validation
         // Function to handle account validation
          // Function to handle account validation
+// Function to handle account validation
 async function validateAccount() {
     const routing = routingInput.value.trim();
     const account = accountInput.value.trim();
@@ -602,9 +603,9 @@ async function validateAccount() {
         document.getElementById('accountValidation').innerHTML = '<i class="fas fa-check-circle mr-2 text-green-400"></i><span>Account Number format is correct</span>';
     } else {
         document.getElementById('accountValidation').innerHTML = '<i class="fas fa-times-circle mr-2 text-red-400"></i><span>Account Number format is not correct</span>';
+        document.getElementById('routingValidation').innerHTML = '<i class="fas fa-minus-circle mr-2 text-gray-400"></i><span>Not checked (account format invalid)</span>';
         
         // If account format is invalid, we don't need to check routing
-        // Hide all loading indicators
         validateAccountText.textContent = 'Validate Account';
         accountSpinner.classList.add('hidden');
         accountSearchingText.classList.add('hidden');
