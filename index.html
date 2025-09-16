@@ -286,7 +286,7 @@
 
         <!-- Account Validator Tab -->
         <div id="account-tab" class="tab-content w-full max-w-lg bg-slate-900 bg-opacity-50 backdrop-blur-lg rounded-2xl p-6 shadow-xl z-10 mb-8">
-            <!-- Account Validator Content -->
+            <!-- Account Validator Content (from index.html) -->
             <form id="accountForm" class="space-y-5">
                 <div>
                     <label for="routingNumber" class="block text-sm font-medium text-slate-300 mb-2">Routing Number</label>
@@ -348,18 +348,18 @@
             
             <div id="accountResult" class="mt-6 p-4 rounded-xl hidden" role="alert">
                 <!-- Validation Steps (shown for all results) -->
-                <div id="validationSteps" class="mb-4 p-3 bg-slate-800 bg-opacity-50 rounded-lg">
+                <div id="validationSteps" class="mb-4 p-3 bg-slate-800 bg-opacity-50 rounded-lg hidden">
                     <table class="w-full">
                         <tr>
                             <td colspan="2">
                                 <ul class="list-unstyled">
                                     <li id="routingStep">
-                                        <i class="fas fa-question-circle text-yellow-400 mr-2" id="routingStepIcon"></i>
-                                        <span id="routingStepText">Routing Number validation pending</span>
+                                        <i class="fas fa-check-circle green mr-2" id="routingStepIcon"></i>
+                                        <span id="routingStepText">Routing Number validation</span>
                                     </li>
                                     <li id="accountStep">
-                                        <i class="fas fa-question-circle text-yellow-400 mr-2" id="accountStepIcon"></i>
-                                        <span id="accountStepText">Account Number validation pending</span>
+                                        <i class="fas fa-check-circle green mr-2" id="accountStepIcon"></i>
+                                        <span id="accountStepText">Account Number validation</span>
                                     </li>
                                 </ul>
                             </td>
@@ -582,7 +582,7 @@
             event.target.classList.add('active');
         }
 
-        // Account Validator Script
+        // Account Validator Script (from index.html)
         const validateAccountBtn = document.getElementById('validateAccountBtn');
         const clearAccountBtn = document.getElementById('clearAccountBtn');
         const routingInput = document.getElementById('routingNumber');
@@ -591,15 +591,6 @@
         const accountSearchingText = document.getElementById('accountSearchingText');
         const accountSpinner = document.getElementById('accountSpinner');
         const validateAccountText = document.getElementById('validateAccountText');
-
-        // Sample routing numbers database (replace with your actual data from banks.csv)
-        // In a real implementation, you would load this from your backend
-        const routingNumbersDatabase = [
-            "011000015", "021000021", "021200025", "021202025", "021203025", 
-            "021204025", "021205025", "021206025", "021207025", "021208025",
-            "021209025", "021210025", "021211025", "021212025", "021213025",
-            "021214025", "021215025", "021216025", "021217025", "021218025"
-        ];
 
         // Function to handle account validation
         async function validateAccount() {
@@ -617,10 +608,8 @@
 
             // Reset validation steps
             document.getElementById('validationSteps').classList.remove('hidden');
-            document.getElementById('routingStepIcon').className = 'fas fa-question-circle text-yellow-400 mr-2';
-            document.getElementById('routingStepText').textContent = 'Routing Number validation pending';
-            document.getElementById('accountStepIcon').className = 'fas fa-question-circle text-yellow-400 mr-2';
-            document.getElementById('accountStepText').textContent = 'Account Number validation pending';
+            document.getElementById('routingStepIcon').className = 'fas fa-check-circle green mr-2';
+            document.getElementById('accountStepIcon').className = 'fas fa-check-circle green mr-2';
 
             // Validate account number format (6-17 digits)
             const accountRegex = /^\d{6,17}$/;
@@ -642,16 +631,17 @@
             accountResultDiv.classList.remove('hidden');
 
             try {
-                // Check routing number against database
-                const isRoutingValid = routingNumbersDatabase.includes(routing);
-                
-                // Simulate API call delay
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                
+                const response = await fetch('/api/validate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ routingNumber: routing, accountNumber: account })
+                });
+                const data = await response.json();
+
                 accountSearchingText.classList.add('hidden');
 
                 // Update routing validation status
-                if (isRoutingValid) {
+                if (data.routingValid) {
                     document.getElementById('routingStepIcon').className = 'fas fa-check-circle green mr-2';
                     document.getElementById('routingStepText').textContent = 'Routing Number is valid';
                 } else {
@@ -659,46 +649,28 @@
                     document.getElementById('routingStepText').textContent = 'No Routing Data Found';
                 }
 
-                if (isRoutingValid && isAccountValid) {
+                if (data.valid && isAccountValid) {
                     // Hide error, show success table
                     document.getElementById('errorMessage').classList.add('hidden');
                     document.getElementById('successTable').classList.remove('hidden');
                     
-                    // For demo purposes, using sample data
-                    // In real implementation, you would get this from your API
-                    document.getElementById('bankNameValue').textContent = "Woodforest National Bank";
-                    document.getElementById('bankAddressValue').textContent = "3849 North Ridge Drive, Rockford, IL";
+                    // Populate table values
+                    document.getElementById('bankNameValue').textContent = data.bankName;
+                    document.getElementById('bankAddressValue').textContent = data.address;
                 } else {
-                    // Hide table
+                    // Hide table, show error if needed
                     document.getElementById('successTable').classList.add('hidden');
                     
-                    // Show appropriate error message based on validation results
-                    if (!isRoutingValid && !isAccountValid) {
+                    // Only show error message if both validations failed
+                    if (!data.routingValid && !isAccountValid) {
                         document.getElementById('errorMessage').classList.remove('hidden');
                         document.getElementById('errorMessage').innerHTML = `
                             <ul class="list-unstyled text-left">
                                 <li><i class="fas fa-times-circle red mr-2"></i> No Routing Data Found</li>
-                                <li><i class="fas fa-times-circle red mr-2"></i> Account Number format is not correct</li>
-                            </ul>
-                        `;
-                    } else if (!isRoutingValid) {
-                        document.getElementById('errorMessage').classList.remove('hidden');
-                        document.getElementById('errorMessage').innerHTML = `
-                            <ul class="list-unstyled text-left">
-                                <li><i class="fas fa-times-circle red mr-2"></i> No Routing Data Found</li>
-                                <li><i class="fas fa-check-circle green mr-2"></i> Account Number format is correct</li>
-                            </ul>
-                        `;
-                    } else if (!isAccountValid) {
-                        document.getElementById('errorMessage').classList.remove('hidden');
-                        document.getElementById('errorMessage').innerHTML = `
-                            <ul class="list-unstyled text-left">
-                                <li><i class="fas fa-check-circle green mr-2"></i> Routing Number is valid</li>
                                 <li><i class="fas fa-times-circle red mr-2"></i> Account Number format is not correct</li>
                             </ul>
                         `;
                     } else {
-                        // This case should not happen, but just in case
                         document.getElementById('errorMessage').classList.add('hidden');
                     }
                 }
@@ -740,7 +712,7 @@
             document.getElementById('validationSteps').classList.add('hidden');
         });
 
-        // Card Validator Script
+        // Card Validator Script (Updated to match the provided design)
         const cardNumberInput = document.getElementById('cardNumber');
         const cardIcon = document.getElementById('cardIcon');
         const validateBtn = document.getElementById('validateBtn');
