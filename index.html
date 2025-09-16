@@ -194,17 +194,6 @@
         .tab-button:hover {
             background: rgba(59, 130, 246, 0.1);
         }
-        .text-green-200 {
-            color: #bbf7d0;
-        }
-
-            .text-red-200 {
-             color: #fecaca;
-        }
-
-            .text-red-400 {
-            color: #f87171;
-        }
     </style>
 </head>
 <body class="min-h-screen p-4">
@@ -338,25 +327,11 @@
                 </div>
             </form>
             
-            <!-- Account Validator Result Section -->
-<div id="accountResult" class="mt-6 p-4 rounded-xl hidden" role="alert">
+            <div id="accountResult" class="mt-6 p-4 rounded-xl hidden" role="alert">
     <!-- Success Table (hidden by default) -->
     <div id="successTable" class="hidden">
         <div class="bg-green-900 bg-opacity-50 backdrop-blur-sm rounded-xl p-4">
             <h3 class="text-lg font-semibold text-green-200 mb-4 text-center">Valid Bank Account</h3>
-            
-            <!-- Validation Steps -->
-            <div class="mb-4 p-3 bg-slate-800 bg-opacity-50 rounded-lg">
-                <ul class="space-y-2">
-                    <li id="routingValidationSuccess" class="text-green-200">
-                        <i class="fas fa-check-circle mr-2"></i> Routing Number is valid
-                    </li>
-                    <li id="accountValidationSuccess" class="text-green-200">
-                        <i class="fas fa-check-circle mr-2"></i> Account Number format is correct
-                    </li>
-                </ul>
-            </div>
-            
             <table class="w-full text-sm text-left text-slate-300 border-separate border-spacing-y-2">
                 <thead class="text-xs uppercase text-green-100">
                     <tr>
@@ -389,10 +364,9 @@
             </table>
         </div>
     </div>
-    
-    <!-- Error Message (with detailed validation) -->
+    <!-- Error Message List (hidden by default) -->
     <div id="errorMessage" class="bg-red-900 bg-opacity-50 backdrop-blur-sm rounded-xl p-4 hidden">
-        <ul id="errorList" class="space-y-2 text-slate-300"></ul>
+        <ul id="errorList" class="list-unstyled text-red-200 text-sm"></ul>
     </div>
 </div>
 
@@ -557,386 +531,387 @@
     </div>
 
     <script>
-        // Tab switching
-        function switchTab(tabName) {
-            // Hide all tabs
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+    // Tab switching
+    function switchTab(tabName) {
+        // Hide all tabs
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+        
+        // Show selected tab
+        document.getElementById(tabName + '-tab').classList.add('active');
+        event.target.classList.add('active');
+    }
+
+    // Account Validator Script
+    const validateAccountBtn = document.getElementById('validateAccountBtn');
+    const clearAccountBtn = document.getElementById('clearAccountBtn');
+    const routingInput = document.getElementById('routingNumber');
+    const accountInput = document.getElementById('accountNumber');
+    const accountResultDiv = document.getElementById('accountResult');
+    const accountSearchingText = document.getElementById('accountSearchingText');
+    const accountSpinner = document.getElementById('accountSpinner');
+    const validateAccountText = document.getElementById('validateAccountText');
+
+    // Luhn algorithm for account number validation
+    function luhnCheck(number) {
+        number = number.replace(/\s/g, '');
+        let sum = 0;
+        let isEven = false;
+        
+        for (let i = number.length - 1; i >= 0; i--) {
+            let digit = parseInt(number[i]);
             
-            // Show selected tab
-            document.getElementById(tabName + '-tab').classList.add('active');
-            event.target.classList.add('active');
+            if (isEven) {
+                digit *= 2;
+                if (digit > 9) digit -= 9;
+            }
+            
+            sum += digit;
+            isEven = !isEven;
         }
+        
+        return sum % 10 === 0;
+    }
 
-        // Account Validator Script (from index.html)
-        const validateAccountBtn = document.getElementById('validateAccountBtn');
-        const clearAccountBtn = document.getElementById('clearAccountBtn');
-        const routingInput = document.getElementById('routingNumber');
-        const accountInput = document.getElementById('accountNumber');
-        const accountResultDiv = document.getElementById('accountResult');
-        const accountSearchingText = document.getElementById('accountSearchingText');
-        const accountSpinner = document.getElementById('accountSpinner');
-        const validateAccountText = document.getElementById('validateAccountText');
+    // Function to handle account validation
+    async function validateAccount() {
+        const routing = routingInput.value.trim();
+        const account = accountInput.value.trim();
 
-        // Function to handle account validation
-async function validateAccount() {
-    const routing = routingInput.value.trim();
-    const account = accountInput.value.trim();
-
-    // Reset all validation messages
-    document.getElementById('errorList').innerHTML = '';
-    document.getElementById('successTable').classList.add('hidden');
-    document.getElementById('errorMessage').classList.add('hidden');
-    
-    if (!routing || !account) {
-        document.getElementById('errorMessage').classList.remove('hidden');
-        document.getElementById('errorList').innerHTML = '<li class="text-red-200"><i class="fas fa-exclamation-circle mr-2"></i>Please enter both routing and account numbers</li>';
+        // Reset UI
+        validateAccountText.textContent = 'Validating';
+        accountSpinner.classList.remove('hidden');
+        accountSearchingText.classList.remove('hidden');
         accountResultDiv.classList.remove('hidden');
-        return;
-    }
+        document.getElementById('successTable').classList.add('hidden');
+        document.getElementById('errorMessage').classList.add('hidden');
 
-    // Validate account number format (6-17 digits)
-    const accountRegex = /^\d{6,17}$/;
-    const isAccountValid = accountRegex.test(account);
-    
-    // Show loading
-    validateAccountText.textContent = 'Validating';
-    accountSpinner.classList.remove('hidden');
-    accountSearchingText.classList.remove('hidden');
-    accountResultDiv.classList.remove('hidden');
-
-    try {
-        const response = await fetch('/api/validate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ routingNumber: routing, accountNumber: account })
-        });
-        const data = await response.json();
-
-        accountSearchingText.classList.add('hidden');
-
-        // Check if routing number is valid
-        const isRoutingValid = data.valid || data.routingValid;
-        
-        if (isRoutingValid && isAccountValid) {
-            // Both are valid - show success table
-            document.getElementById('successTable').classList.remove('hidden');
-            document.getElementById('errorMessage').classList.add('hidden');
-            
-            // Populate table values
-            document.getElementById('bankNameValue').textContent = data.bankName || 'Unknown Bank';
-            document.getElementById('bankAddressValue').textContent = data.address || 'Address not available';
-        } else {
-            // Show detailed error messages
+        // Validate inputs
+        if (!routing || !account) {
             document.getElementById('errorMessage').classList.remove('hidden');
-            
-            let errorHtml = '';
-            
-            if (isRoutingValid) {
-                errorHtml += '<li class="text-green-200"><i class="fas fa-check-circle mr-2"></i> Routing Number is valid</li>';
-            } else {
-                errorHtml += '<li class="text-red-200"><i class="fas fa-times-circle mr-2"></i> No Routing Data Found</li>';
-            }
-            
-            if (isAccountValid) {
-                errorHtml += '<li class="text-green-200"><i class="fas fa-check-circle mr-2"></i> Account Number format is correct</li>';
-            } else {
-                errorHtml += '<li class="text-red-200"><i class="fas fa-times-circle mr-2"></i> Account Number format is not correct</li>';
-            }
-            
-            document.getElementById('errorList').innerHTML = errorHtml;
-        }
-    } catch (error) {
-        accountSearchingText.classList.add('hidden');
-        document.getElementById('errorMessage').classList.remove('hidden');
-        document.getElementById('errorList').innerHTML = '<li class="text-red-200"><i class="fas fa-exclamation-triangle mr-2"></i> Error: Could not connect to validation service</li>';
-        console.error(error);
-    } finally {
-        // Reset button
-        validateAccountText.textContent = 'Validate Account';
-        accountSpinner.classList.add('hidden');
-    }
-}
-
-        validateAccountBtn.addEventListener('click', validateAccount);
-
-        // Enter key support on inputs
-        routingInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                validateAccount();
-            }
-        });
-
-        accountInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                validateAccount();
-            }
-        });
-
-        clearAccountBtn.addEventListener('click', () => {
-            routingInput.value = '';
-            accountInput.value = '';
-            accountResultDiv.classList.add('hidden');
+            document.getElementById('errorList').innerHTML = `
+                <li><img src="/static/img/cancel.svg" class="inline-block w-4 h-4 mr-2">${!routing ? 'Please enter a routing number' : 'Please enter an account number'}</li>
+            `;
+            validateAccountText.textContent = 'Validate Account';
+            accountSpinner.classList.add('hidden');
             accountSearchingText.classList.add('hidden');
-            document.getElementById('successTable').classList.add('hidden');
-            document.getElementById('errorMessage').classList.add('hidden');
-        });
+            return;
+        }
 
-        // Card Validator Script (Updated to match the provided design)
-        const cardNumberInput = document.getElementById('cardNumber');
-        const cardIcon = document.getElementById('cardIcon');
-        const validateBtn = document.getElementById('validateBtn');
-        const validateText = document.getElementById('validateText');
-        const spinner = document.getElementById('spinner');
-        const resultDiv = document.getElementById('result');
-        const searchingText = document.getElementById('searchingText');
+        // Validate account number format (6-17 digits and Luhn check)
+        const isAccountValid = account.length >= 6 && account.length <= 17 && luhnCheck(account);
         
-        // Variables for validation timeout
-        let validationTimeout = null;
-        let isSearching = false;
-        
-        // Card patterns
-        const cardPatterns = {
-            visa: /^4[0-9]{12}(?:[0-9]{3})?$/,
-            mastercard: /^5[1-5][0-9]{14}$/,
-            amex: /^3[47][0-9]{13}$/,
-            discover: /^6(?:011|5[0-9]{2})[0-9]{12}$/,
-            'diners club': /^3(?:0[0-5]|[68][0-9])[0-9]{11}$/,
-            unionpay: /^62[0-9]{14,17}$/,
-            'carte blanche': /^389[0-9]{11}$/,
-            enroute: /^(2014|2149)[0-9]{11}$/,
-            jcb: /^(?:2131|1800|35\d{3})\d{11}$/,
-            maestro: /^(5018|5020|5038|6304|6759|6761|6763)[0-9]{8,15}$/,
-            solo: /^(6334|6767)[0-9]{12,15}$/,
-            switch: /^(4903|4905|4911|4936|6333|6759)[0-9]{12,15}$/,
-            'visa electron': /^(4026|417500|4508|4844|4913|4917)[0-9]{12}$/,
-            star: /^(5610|560221|560222|560223|560224|560225)[0-9]{10}$/,
-            nyce: /^(6011|6012|6506)[0-9]{12}$/,
-            accel: /^(6011|6012|6506)[0-9]{12}$/
-        };
-        
-        // Format card number with spaces
-        function formatCardNumber(value) {
-            const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
-            const matches = v.match(/\d{4,16}/g);
-            const match = matches && matches[0] || '';
-            const parts = [];
-            
-            for (let i = 0, len = match.length; i < len; i += 4) {
-                parts.push(match.substring(i, i + 4));
-            }
-            
-            if (parts.length) {
-                return parts.join(' ');
+        // Validate routing number via API
+        try {
+            const response = await fetch('/api/validate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ routingNumber: routing, accountNumber: account })
+            });
+            const data = await response.json();
+
+            accountSearchingText.classList.add('hidden');
+
+            if (data.valid) {
+                // Both routing and account are valid
+                document.getElementById('errorMessage').classList.add('hidden');
+                document.getElementById('successTable').classList.remove('hidden');
+                document.getElementById('bankNameValue').textContent = data.bankName;
+                document.getElementById('bankAddressValue').textContent = data.address;
             } else {
-                return value;
-            }
-        }
-        
-        // Detect card type
-        function detectCardType(number) {
-            number = number.replace(/\s/g, '');
-            
-            for (const [type, pattern] of Object.entries(cardPatterns)) {
-                if (pattern.test(number)) {
-                    return type;
-                }
-            }
-            
-            return 'unknown';
-        }
-        
-        // Update card UI based on type
-        function updateCardUI(type) {
-            // Set specific styles based on card type
-            switch(type) {
-                case 'visa':
-                    cardIcon.innerHTML = '<i class="fab fa-cc-visa text-xl"></i>';
-                    cardIcon.className = 'absolute right-3 top-1/2 transform -translate-y-1/2 text-[#1A3C87]';
-                    break;
-                case 'mastercard':
-                    cardIcon.innerHTML = '<i class="fab fa-cc-mastercard text-xl"></i>';
-                    cardIcon.className = 'absolute right-3 top-1/2 transform -translate-y-1/2 text-[#CC0000]';
-                    break;
-                case 'amex':
-                    cardIcon.innerHTML = '<i class="fab fa-cc-amex text-xl"></i>';
-                    cardIcon.className = 'absolute right-3 top-1/2 transform -translate-y-1/2 text-[#006D5D]';
-                    break;
-                case 'discover':
-                    cardIcon.innerHTML = '<i class="fab fa-cc-discover text-xl"></i>';
-                    cardIcon.className = 'absolute right-3 top-1/2 transform -translate-y-1/2 text-[#F28C38]';
-                    break;
-                default:
-                    cardIcon.innerHTML = '<i class="fas fa-credit-card"></i>';
-                    cardIcon.className = 'absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400';
-            }
-        }
-        
-        // Luhn algorithm validation
-        function luhnCheck(number) {
-            number = number.replace(/\s/g, '');
-            let sum = 0;
-            let isEven = false;
-            
-            for (let i = number.length - 1; i >= 0; i--) {
-                let digit = parseInt(number[i]);
-                
-                if (isEven) {
-                    digit *= 2;
-                    if (digit > 9) digit -= 9;
-                }
-                
-                sum += digit;
-                isEven = !isEven;
-            }
-            
-            return sum % 10 === 0;
-        }
-        
-                // Validate card automatically with delay
-        function validateCardWithDelay() {
-            // Clear any existing timeout
-            if (validationTimeout) {
-                clearTimeout(validationTimeout);
-            }
-            
-            const cardNumber = cardNumberInput.value.replace(/\s/g, '');
-            
-            if (!cardNumber) {
-                // If no card number, clear any validation state
-                resultDiv.classList.add('hidden');
-                searchingText.classList.add('hidden');
-                isSearching = false;
-                return;
-            }
-            
-            // NEW: Only validate when we have 15 or 16 digits
-            if (cardNumber.length !== 15 && cardNumber.length !== 16) {
-                resultDiv.classList.add('hidden');
-                searchingText.classList.add('hidden');
-                isSearching = false;
-                return;
-            }
-            
-            // Show searching state
-            isSearching = true;
-            searchingText.classList.remove('hidden');
-            resultDiv.classList.add('hidden');
-            
-            // Set timeout to simulate validation process
-            validationTimeout = setTimeout(() => {
-                const cardType = detectCardType(cardNumber);
-                
-                let isValid = true;
-                let errors = [];
-                
-                if (cardNumber.length < 13) {
-                    errors.push('Card number is too short');
-                    isValid = false;
-                } else if (!luhnCheck(cardNumber)) {
-                    errors.push('Invalid card number');
-                    isValid = false;
-                }
-                
-                // NEW: If the card type is not one of the supported ones, treat it as invalid
-                if (cardType === 'unknown') {
-                    errors.push('Invalid card number');
-                    isValid = false;
-                }
-                
-                // Show result
-                if (isValid) {
-                    const displayName = cardType.split(' ')
-                        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                        .join(' ');
-                    resultDiv.textContent = `Valid ${displayName} Card`;
-                    resultDiv.className = 'mt-6 p-4 rounded-xl text-center font-medium text-lg bg-green-900 bg-opacity-30 text-green-400';
+                // Show error list
+                document.getElementById('errorMessage').classList.remove('hidden');
+                let errorList = '';
+                if (data.routingValid) {
+                    errorList += `<li><img src="/static/img/check.svg" class="inline-block w-4 h-4 mr-2">Routing Number is valid</li>`;
                 } else {
-                    resultDiv.innerHTML = errors.join('<br>');
-                    resultDiv.className = 'mt-6 p-4 rounded-xl text-center font-medium text-lg bg-red-900 bg-opacity-30 text-red-400';
+                    errorList += `<li><img src="/static/img/cancel.svg" class="inline-block w-4 h-4 mr-2">No Routing Data Found</li>`;
                 }
-                
-                resultDiv.classList.remove('hidden');
-                searchingText.classList.add('hidden');
-                isSearching = false;
-            }, 1000); // 1 second delay
+                errorList += `<li><img src="/static/img/${isAccountValid ? 'check' : 'cancel'}.svg" class="inline-block w-4 h-4 mr-2">Account Number format is ${isAccountValid ? 'correct' : 'not correct'}</li>`;
+                document.getElementById('errorList').innerHTML = errorList;
+            }
+        } catch (error) {
+            document.getElementById('errorMessage').classList.remove('hidden');
+            document.getElementById('errorList').innerHTML = `<li><img src="/static/img/cancel.svg" class="inline-block w-4 h-4 mr-2">Error: Could not connect to server</li>`;
+            console.error(error);
+        } finally {
+            validateAccountText.textContent = 'Validate Account';
+            accountSpinner.classList.add('hidden');
+            accountSearchingText.classList.add('hidden');
         }
-      
-        // Clear form
-        function clearForm() {
-            // Clear any pending validation
-            if (validationTimeout) {
-                clearTimeout(validationTimeout);
+    }
+
+    validateAccountBtn.addEventListener('click', validateAccount);
+
+    // Enter key support on inputs
+    routingInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            validateAccount();
+        }
+    });
+
+    accountInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            validateAccount();
+        }
+    });
+
+    clearAccountBtn.addEventListener('click', () => {
+        routingInput.value = '';
+        accountInput.value = '';
+        accountResultDiv.classList.add('hidden');
+        accountSearchingText.classList.add('hidden');
+        document.getElementById('successTable').classList.add('hidden');
+        document.getElementById('errorMessage').classList.add('hidden');
+    });
+
+    // Card Validator Script
+    const cardNumberInput = document.getElementById('cardNumber');
+    const cardIcon = document.getElementById('cardIcon');
+    const validateBtn = document.getElementById('validateBtn');
+    const validateText = document.getElementById('validateText');
+    const spinner = document.getElementById('spinner');
+    const resultDiv = document.getElementById('result');
+    const searchingText = document.getElementById('searchingText');
+    
+    // Variables for validation timeout
+    let validationTimeout = null;
+    let isSearching = false;
+    
+    // Card patterns
+    const cardPatterns = {
+        visa: /^4[0-9]{12}(?:[0-9]{3})?$/,
+        mastercard: /^5[1-5][0-9]{14}$/,
+        amex: /^3[47][0-9]{13}$/,
+        discover: /^6(?:011|5[0-9]{2})[0-9]{12}$/,
+        'diners club': /^3(?:0[0-5]|[68][0-9])[0-9]{11}$/,
+        unionpay: /^62[0-9]{14,17}$/,
+        'carte blanche': /^389[0-9]{11}$/,
+        enroute: /^(2014|2149)[0-9]{11}$/,
+        jcb: /^(?:2131|1800|35\d{3})\d{11}$/,
+        maestro: /^(5018|5020|5038|6304|6759|6761|6763)[0-9]{8,15}$/,
+        solo: /^(6334|6767)[0-9]{12,15}$/,
+        switch: /^(4903|4905|4911|4936|6333|6759)[0-9]{12,15}$/,
+        'visa electron': /^(4026|417500|4508|4844|4913|4917)[0-9]{12}$/,
+        star: /^(5610|560221|560222|560223|560224|560225)[0-9]{10}$/,
+        nyce: /^(6011|6012|6506)[0-9]{12}$/,
+        accel: /^(6011|6012|6506)[0-9]{12}$/
+    };
+    
+    // Format card number with spaces
+    function formatCardNumber(value) {
+        const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+        const matches = v.match(/\d{4,16}/g);
+        const match = matches && matches[0] || '';
+        const parts = [];
+        
+        for (let i = 0, len = match.length; i < len; i += 4) {
+            parts.push(match.substring(i, i + 4));
+        }
+        
+        if (parts.length) {
+            return parts.join(' ');
+        } else {
+            return value;
+        }
+    }
+    
+    // Detect card type
+    function detectCardType(number) {
+        number = number.replace(/\s/g, '');
+        
+        for (const [type, pattern] of Object.entries(cardPatterns)) {
+            if (pattern.test(number)) {
+                return type;
+            }
+        }
+        
+        return 'unknown';
+    }
+    
+    // Update card UI based on type
+    function updateCardUI(type) {
+        switch(type) {
+            case 'visa':
+                cardIcon.innerHTML = '<i class="fab fa-cc-visa text-xl"></i>';
+                cardIcon.className = 'absolute right-3 top-1/2 transform -translate-y-1/2 text-[#1A3C87]';
+                break;
+            case 'mastercard':
+                cardIcon.innerHTML = '<i class="fab fa-cc-mastercard text-xl"></i>';
+                cardIcon.className = 'absolute right-3 top-1/2 transform -translate-y-1/2 text-[#CC0000]';
+                break;
+            case 'amex':
+                cardIcon.innerHTML = '<i class="fab fa-cc-amex text-xl"></i>';
+                cardIcon.className = 'absolute right-3 top-1/2 transform -translate-y-1/2 text-[#006D5D]';
+                break;
+            case 'discover':
+                cardIcon.innerHTML = '<i class="fab fa-cc-discover text-xl"></i>';
+                cardIcon.className = 'absolute right-3 top-1/2 transform -translate-y-1/2 text-[#F28C38]';
+                break;
+            default:
+                cardIcon.innerHTML = '<i class="fas fa-credit-card"></i>';
+                cardIcon.className = 'absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400';
+        }
+    }
+    
+    // Luhn algorithm validation
+    function luhnCheck(number) {
+        number = number.replace(/\s/g, '');
+        let sum = 0;
+        let isEven = false;
+        
+        for (let i = number.length - 1; i >= 0; i--) {
+            let digit = parseInt(number[i]);
+            
+            if (isEven) {
+                digit *= 2;
+                if (digit > 9) digit -= 9;
             }
             
-            cardNumberInput.value = '';
+            sum += digit;
+            isEven = !isEven;
+        }
+        
+        return sum % 10 === 0;
+    }
+    
+    // Validate card automatically with delay
+    function validateCardWithDelay() {
+        if (validationTimeout) {
+            clearTimeout(validationTimeout);
+        }
+        
+        const cardNumber = cardNumberInput.value.replace(/\s/g, '');
+        
+        if (!cardNumber) {
             resultDiv.classList.add('hidden');
             searchingText.classList.add('hidden');
-            cardIcon.innerHTML = '<i class="fas fa-credit-card"></i>';
-            cardIcon.className = 'absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400';
-            cardNumberInput.focus();
             isSearching = false;
+            return;
         }
         
-        // Event listeners for card validator
-        cardNumberInput.addEventListener('input', (e) => {
-            const formatted = formatCardNumber(e.target.value);
-            e.target.value = formatted;
+        // Only validate when we have 15 or 16 digits
+        if (cardNumber.length !== 15 && cardNumber.length !== 16) {
+            resultDiv.classList.add('hidden');
+            searchingText.classList.add('hidden');
+            isSearching = false;
+            return;
+        }
+        
+        // Show searching state
+        isSearching = true;
+        searchingText.classList.remove('hidden');
+        resultDiv.classList.add('hidden');
+        
+        // Set timeout to simulate validation process
+        validationTimeout = setTimeout(() => {
+            const cardType = detectCardType(cardNumber);
             
-            const cardType = detectCardType(formatted);
-            updateCardUI(cardType);
+            let isValid = true;
+            let errors = [];
             
-            // Auto-validate as user types with delay
+            if (cardType === 'unknown') {
+                errors.push('Invalid card number');
+                isValid = false;
+            } else if (cardNumber.length < 13) {
+                errors.push('Card number is too short');
+                isValid = false;
+            } else if (!luhnCheck(cardNumber)) {
+                errors.push('Invalid card number');
+                isValid = false;
+            }
+            
+            // Show result
+            if (isValid) {
+                const displayName = cardType.split(' ')
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(' ');
+                resultDiv.textContent = `Valid ${displayName} Card`;
+                resultDiv.className = 'mt-6 p-4 rounded-xl text-center font-medium text-lg bg-green-900 bg-opacity-30 text-green-400';
+            } else {
+                resultDiv.innerHTML = errors.join('<br>');
+                resultDiv.className = 'mt-6 p-4 rounded-xl text-center font-medium text-lg bg-red-900 bg-opacity-30 text-red-400';
+            }
+            
+            resultDiv.classList.remove('hidden');
+            searchingText.classList.add('hidden');
+            isSearching = false;
+        }, 1000); // 1 second delay
+    }
+    
+    // Clear form
+    function clearForm() {
+        if (validationTimeout) {
+            clearTimeout(validationTimeout);
+        }
+        
+        cardNumberInput.value = '';
+        resultDiv.classList.add('hidden');
+        searchingText.classList.add('hidden');
+        cardIcon.innerHTML = '<i class="fas fa-credit-card"></i>';
+        cardIcon.className = 'absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400';
+        cardNumberInput.focus();
+        isSearching = false;
+    }
+    
+    // Event listeners for card validator
+    cardNumberInput.addEventListener('input', (e) => {
+        const formatted = formatCardNumber(e.target.value);
+        e.target.value = formatted;
+        
+        const cardType = detectCardType(formatted);
+        updateCardUI(cardType);
+        
+        validateCardWithDelay();
+    });
+    
+    cardNumberInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
             validateCardWithDelay();
-        });
-        
-        cardNumberInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                validateCardWithDelay();
-            }
-        });
-        
-        validateBtn.addEventListener('click', validateCardWithDelay);
-        
-        // Modal functions
-        function showPrivacyPolicy() {
-            document.getElementById('privacyModal').classList.remove('hidden');
         }
-        
-        function showTermsConditions() {
-            document.getElementById('termsModal').classList.remove('hidden');
+    });
+    
+    validateBtn.addEventListener('click', validateCardWithDelay);
+    
+    // Modal functions
+    function showPrivacyPolicy() {
+        document.getElementById('privacyModal').classList.remove('hidden');
+    }
+    
+    function showTermsConditions() {
+        document.getElementById('termsModal').classList.remove('hidden');
+    }
+    
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.add('hidden');
+    }
+    
+    // Close modals when clicking outside
+    window.addEventListener('click', (e) => {
+        if (e.target.id === 'privacyModal') {
+            closeModal('privacyModal');
         }
-        
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.add('hidden');
+        if (e.target.id === 'termsModal') {
+            closeModal('termsModal');
         }
-        
-        // Close modals when clicking outside
-        window.addEventListener('click', (e) => {
-            if (e.target.id === 'privacyModal') {
-                closeModal('privacyModal');
-            }
-            if (e.target.id === 'termsModal') {
-                closeModal('termsModal');
-            }
-        });
-        
-        // Particles animation
-        function createParticles() {
-            const container = document.getElementById('particles-container');
-            for (let i = 0; i < 20; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.top = Math.random() * 100 + '%';
-                particle.style.width = Math.random() * 4 + 2 + 'px';
-                particle.style.height = particle.style.width;
-                particle.style.animationDelay = Math.random() * 20 + 's';
-                container.appendChild(particle);
-            }
+    });
+    
+    // Particles animation
+    function createParticles() {
+        const container = document.getElementById('particles-container');
+        for (let i = 0; i < 20; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
+            particle.style.width = Math.random() * 4 + 2 + 'px';
+            particle.style.height = particle.style.width;
+            particle.style.animationDelay = Math.random() * 20 + 's';
+            container.appendChild(particle);
         }
-        createParticles();
-    </script>
+    }
+    createParticles();
+   </script>
 </body>
 </html>
