@@ -285,130 +285,129 @@
         </div>
 
         <!-- Account Validator Tab -->
-        <div id="account-tab" class="tab-content w-full max-w-lg bg-slate-900 bg-opacity-50 backdrop-blur-lg rounded-2xl p-6 shadow-xl z-10 mb-8">
-            <!-- Account Validator Content (from index.html) -->
-            <form id="accountForm" class="space-y-5">
-                <div>
-                    <label for="routingNumber" class="block text-sm font-medium text-slate-300 mb-2">Routing Number</label>
-                    <div class="relative">
-                        <input 
-                            type="text" 
-                            id="routingNumber" 
-                            maxlength="9" 
-                            class="w-full p-4 input-field rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-0"
-                            placeholder="Enter routing number"
-                            autocomplete="off"
-                        >
-                        <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400" id="routingIcon">
-                            <i class="fas fa-university"></i>
-                        </div>
-                    </div>
+<div id="account-tab" class="tab-content w-full max-w-lg bg-slate-900 bg-opacity-50 backdrop-blur-lg rounded-2xl p-6 shadow-xl z-10 mb-8">
+    <!-- Account Validator Content -->
+    <form id="accountForm" class="space-y-5">
+        <div>
+            <label for="routingNumber" class="block text-sm font-medium text-slate-300 mb-2">Routing Number</label>
+            <div class="relative">
+                <input 
+                    type="text" 
+                    id="routingNumber" 
+                    maxlength="9" 
+                    class="w-full p-4 input-field rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-0"
+                    placeholder="Enter routing number"
+                    autocomplete="off"
+                >
+                <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400" id="routingIcon">
+                    <i class="fas fa-university"></i>
                 </div>
-                <div>
-                    <label for="accountNumber" class="block text-sm font-medium text-slate-300 mb-2">Account Number</label>
-                    <div class="relative">
-                        <input 
-                            type="text" 
-                            id="accountNumber" 
-                            maxlength="17" 
-                            class="w-full p-4 input-field rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-0"
-                            placeholder="Enter account number"
-                            autocomplete="off"
-                        >
-                        <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400" id="accountIcon">
-                            <i class="fas fa-file-invoice-dollar"></i>
-                        </div>
-                    </div>
-                    <div id="accountSearchingText" class="text-md font-medium text-slate-300 mt-3 hidden">
-                        <span class="searching-animation"></span> Validating
-                    </div>
-                </div>
-                
-                <div class="pt-4 flex gap-4">
-                    <button 
-                        type="button" 
-                        id="validateAccountBtn"
-                        class="flex-1 py-4 btn-primary text-white font-semibold rounded-xl transition-all duration-300 flex items-center justify-center"
-                    >
-                        <span id="validateAccountText">Validate Account</span>
-                        <span id="accountSpinner" class="ml-2 hidden">
-                            <i class="fas fa-spinner fa-spin"></i>
-                        </span>
-                    </button>
-                    
-                    <button 
-                        type="button" 
-                        id="clearAccountBtn"
-                        class="flex-1 py-4 btn-secondary text-white font-semibold rounded-xl transition-all duration-300"
-                    >
-                        Clear
-                    </button>
-                </div>
-            </form>
-            
-            <div id="accountResult" class="mt-6 p-4 rounded-xl hidden" role="alert">
-                <!-- Validation Steps (shown for all results) -->
-                <div id="validationSteps" class="mb-4 p-3 bg-slate-800 bg-opacity-50 rounded-lg hidden">
-                    <table class="w-full">
-                        <tr>
-                            <td colspan="2">
-                                <ul class="list-unstyled">
-                                    <li id="routingStep">
-                                        <i class="fas fa-check-circle green mr-2" id="routingStepIcon"></i>
-                                        <span id="routingStepText">Routing Number validation</span>
-                                    </li>
-                                    <li id="accountStep">
-                                        <i class="fas fa-check-circle green mr-2" id="accountStepIcon"></i>
-                                        <span id="accountStepText">Account Number validation</span>
-                                    </li>
-                                </ul>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-                
-                <!-- Success Table (hidden by default) -->
-                <div id="successTable" class="hidden">
-                    <div class="bg-green-900 bg-opacity-50 backdrop-blur-sm rounded-xl p-4">
-                        <h3 class="text-lg font-semibold text-green-200 mb-4 text-center">Valid Bank Account</h3>
-                        <table class="w-full text-sm text-left text-slate-300 border-separate border-spacing-y-2">
-                            <thead class="text-xs uppercase text-green-100">
-                                <tr>
-                                    <th class="py-2 px-4 text-right font-medium">Field</th>
-                                    <th class="py-2 px-4">Value</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="bg-slate-800 bg-opacity-50 rounded-lg">
-                                    <th class="py-3 px-4 text-right font-medium text-slate-300">Bank Name</th>
-                                    <td id="bankNameValue" class="py-3 px-4 font-semibold text-green-200">Loading...</td>
-                                </tr>
-                                <tr class="bg-slate-800 bg-opacity-50 rounded-lg">
-                                    <th class="py-3 px-4 text-right font-medium text-slate-300">Bank Address</th>
-                                    <td id="bankAddressValue" class="py-3 px-4 text-slate-200">Loading...</td>
-                                </tr>
-                                <tr class="bg-slate-800 bg-opacity-50 rounded-lg">
-                                    <th class="py-3 px-4 text-right font-medium text-slate-300">ACH Transfer</th>
-                                    <td id="achValue" class="py-3 px-4 text-green-400">
-                                        <i class="fas fa-check-circle mr-2"></i>Supported
-                                    </td>
-                                </tr>
-                                <tr class="bg-slate-800 bg-opacity-50 rounded-lg">
-                                    <th class="py-3 px-4 text-right font-medium text-slate-300">Wire Transfer</th>
-                                    <td id="wireValue" class="py-3 px-4 text-green-400">
-                                        <i class="fas fa-check-circle mr-2"></i>Supported
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                
-                <!-- Error Message (fallback for invalid) -->
-                <div id="errorMessage" class="bg-red-900 text-red-200 p-4 rounded-xl text-center font-medium hidden"></div>
             </div>
         </div>
+        <div>
+            <label for="accountNumber" class="block text-sm font-medium text-slate-300 mb-2">Account Number</label>
+            <div class="relative">
+                <input 
+                    type="text" 
+                    id="accountNumber" 
+                    maxlength="17" 
+                    class="w-full p-4 input-field rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-0"
+                    placeholder="Enter account number"
+                    autocomplete="off"
+                >
+                <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400" id="accountIcon">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                </div>
+            </div>
+            <div id="accountSearchingText" class="text-md font-medium text-slate-300 mt-3 hidden">
+                <span class="searching-animation"></span> Validating
+            </div>
+        </div>
+        
+        <div class="pt-4 flex gap-4">
+            <button 
+                type="button" 
+                id="validateAccountBtn"
+                class="flex-1 py-4 btn-primary text-white font-semibold rounded-xl transition-all duration-300 flex items-center justify-center"
+            >
+                <span id="validateAccountText">Validate Account</span>
+                <span id="accountSpinner" class="ml-2 hidden">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </span>
+            </button>
+            
+            <button 
+                type="button" 
+                id="clearAccountBtn"
+                class="flex-1 py-4 btn-secondary text-white font-semibold rounded-xl transition-all duration-300"
+            >
+                Clear
+            </button>
+        </div>
+    </form>
+    
+    <div id="accountResult" class="mt-6 p-4 rounded-xl hidden" role="alert">
+        <!-- Validation Steps (shown for all results) -->
+        <div id="validationSteps" class="mb-4 p-3 bg-slate-800 bg-opacity-50 rounded-lg">
+            <table class="w-full">
+                <tr>
+                    <td colspan="2">
+                        <ul class="list-unstyled">
+                            <li id="routingStep">
+                                <i class="fas fa-question-circle text-yellow-400 mr-2" id="routingStepIcon"></i>
+                                <span id="routingStepText">Routing Number validation pending</span>
+                            </li>
+                            <li id="accountStep">
+                                <i class="fas fa-question-circle text-yellow-400 mr-2" id="accountStepIcon"></i>
+                                <span id="accountStepText">Account Number validation pending</span>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        
+        <!-- Success Table (hidden by default) -->
+        <div id="successTable" class="hidden">
+            <div class="bg-green-900 bg-opacity-50 backdrop-blur-sm rounded-xl p-4">
+                <h3 class="text-lg font-semibold text-green-200 mb-4 text-center">Valid Bank Account</h3>
+                <table class="w-full text-sm text-left text-slate-300 border-separate border-spacing-y-2">
+                    <thead class="text-xs uppercase text-green-100">
+                        <tr>
+                            <th class="py-2 px-4 text-right font-medium">Field</th>
+                            <th class="py-2 px-4">Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="bg-slate-800 bg-opacity-50 rounded-lg">
+                            <th class="py-3 px-4 text-right font-medium text-slate-300">Bank Name</th>
+                            <td id="bankNameValue" class="py-3 px-4 font-semibold text-green-200">Loading...</td>
+                        </tr>
+                        <tr class="bg-slate-800 bg-opacity-50 rounded-lg">
+                            <th class="py-3 px-4 text-right font-medium text-slate-300">Bank Address</th>
+                            <td id="bankAddressValue" class="py-3 px-4 text-slate-200">Loading...</td>
+                        </tr>
+                        <tr class="bg-slate-800 bg-opacity-50 rounded-lg">
+                            <th class="py-3 px-4 text-right font-medium text-slate-300">ACH Transfer</th>
+                            <td id="achValue" class="py-3 px-4 text-green-400">
+                                <i class="fas fa-check-circle mr-2"></i>Supported
+                            </td>
+                        </tr>
+                        <tr class="bg-slate-800 bg-opacity-50 rounded-lg">
+                            <th class="py-3 px-4 text-right font-medium text-slate-300">Wire Transfer</th>
+                            <td id="wireValue" class="py-3 px-4 text-green-400">
+                                <i class="fas fa-check-circle mr-2"></i>Supported
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Error Message (fallback for invalid) -->
+        <div id="errorMessage" class="bg-red-900 text-red-200 p-4 rounded-xl text-center font-medium hidden"></div>
     </div>
+</div>
 
     <div class="footer flex justify-center space-x-6 text-slate-400 z-10">
         <a href="#" class="policy-link" onclick="showPrivacyPolicy()">
@@ -593,99 +592,117 @@
         const validateAccountText = document.getElementById('validateAccountText');
 
         // Function to handle account validation
-        async function validateAccount() {
-            const routing = routingInput.value.trim();
-            const account = accountInput.value.trim();
+async function validateAccount() {
+    const routing = routingInput.value.trim();
+    const account = accountInput.value.trim();
 
-            if (!routing || !account) {
-                document.getElementById('errorMessage').classList.remove('hidden');
-                document.getElementById('errorMessage').innerHTML = 'Please enter both numbers.';
-                accountResultDiv.classList.remove('hidden');
-                document.getElementById('validationSteps').classList.add('hidden');
-                document.getElementById('successTable').classList.add('hidden');
-                return;
-            }
+    if (!routing || !account) {
+        document.getElementById('errorMessage').classList.remove('hidden');
+        document.getElementById('errorMessage').innerHTML = 'Please enter both numbers.';
+        accountResultDiv.classList.remove('hidden');
+        document.getElementById('successTable').classList.add('hidden');
+        return;
+    }
 
-            // Reset validation steps
-            document.getElementById('validationSteps').classList.remove('hidden');
+    // Reset validation steps
+    document.getElementById('validationSteps').classList.remove('hidden');
+    document.getElementById('routingStepIcon').className = 'fas fa-question-circle text-yellow-400 mr-2';
+    document.getElementById('routingStepText').textContent = 'Routing Number validation pending';
+    document.getElementById('accountStepIcon').className = 'fas fa-question-circle text-yellow-400 mr-2';
+    document.getElementById('accountStepText').textContent = 'Account Number validation pending';
+
+    // Validate account number format (6-17 digits)
+    const accountRegex = /^\d{6,17}$/;
+    const isAccountValid = accountRegex.test(account);
+    
+    // Show account validation status immediately
+    if (isAccountValid) {
+        document.getElementById('accountStepIcon').className = 'fas fa-check-circle green mr-2';
+        document.getElementById('accountStepText').textContent = 'Account Number format is correct';
+    } else {
+        document.getElementById('accountStepIcon').className = 'fas fa-times-circle red mr-2';
+        document.getElementById('accountStepText').textContent = 'Account Number format is not correct';
+    }
+
+    // Show loading
+    validateAccountText.textContent = 'Validating';
+    accountSpinner.classList.remove('hidden');
+    accountSearchingText.classList.remove('hidden');
+    accountResultDiv.classList.remove('hidden');
+
+    try {
+        const response = await fetch('/api/validate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ routingNumber: routing, accountNumber: account })
+        });
+        const data = await response.json();
+
+        accountSearchingText.classList.add('hidden');
+
+        // Update routing validation status based on API response
+        if (data.routingValid) {
             document.getElementById('routingStepIcon').className = 'fas fa-check-circle green mr-2';
-            document.getElementById('accountStepIcon').className = 'fas fa-check-circle green mr-2';
+            document.getElementById('routingStepText').textContent = 'Routing Number is valid';
+        } else {
+            document.getElementById('routingStepIcon').className = 'fas fa-times-circle red mr-2';
+            document.getElementById('routingStepText').textContent = 'No Routing Data Found';
+        }
 
-            // Validate account number format (6-17 digits)
-            const accountRegex = /^\d{6,17}$/;
-            const isAccountValid = accountRegex.test(account);
+        if (data.valid && isAccountValid) {
+            // Hide error, show success table
+            document.getElementById('errorMessage').classList.add('hidden');
+            document.getElementById('successTable').classList.remove('hidden');
             
-            // Show account validation status immediately
-            if (isAccountValid) {
-                document.getElementById('accountStepIcon').className = 'fas fa-check-circle green mr-2';
-                document.getElementById('accountStepText').textContent = 'Account Number format is correct';
-            } else {
-                document.getElementById('accountStepIcon').className = 'fas fa-times-circle red mr-2';
-                document.getElementById('accountStepText').textContent = 'Account Number format is not correct';
-            }
-
-            // Show loading
-            validateAccountText.textContent = 'Validating';
-            accountSpinner.classList.remove('hidden');
-            accountSearchingText.classList.remove('hidden');
-            accountResultDiv.classList.remove('hidden');
-
-            try {
-                const response = await fetch('/api/validate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ routingNumber: routing, accountNumber: account })
-                });
-                const data = await response.json();
-
-                accountSearchingText.classList.add('hidden');
-
-                // Update routing validation status
-                if (data.routingValid) {
-                    document.getElementById('routingStepIcon').className = 'fas fa-check-circle green mr-2';
-                    document.getElementById('routingStepText').textContent = 'Routing Number is valid';
-                } else {
-                    document.getElementById('routingStepIcon').className = 'fas fa-times-circle red mr-2';
-                    document.getElementById('routingStepText').textContent = 'No Routing Data Found';
-                }
-
-                if (data.valid && isAccountValid) {
-                    // Hide error, show success table
-                    document.getElementById('errorMessage').classList.add('hidden');
-                    document.getElementById('successTable').classList.remove('hidden');
-                    
-                    // Populate table values
-                    document.getElementById('bankNameValue').textContent = data.bankName;
-                    document.getElementById('bankAddressValue').textContent = data.address;
-                } else {
-                    // Hide table, show error if needed
-                    document.getElementById('successTable').classList.add('hidden');
-                    
-                    // Only show error message if both validations failed
-                    if (!data.routingValid && !isAccountValid) {
-                        document.getElementById('errorMessage').classList.remove('hidden');
-                        document.getElementById('errorMessage').innerHTML = `
-                            <ul class="list-unstyled text-left">
-                                <li><i class="fas fa-times-circle red mr-2"></i> No Routing Data Found</li>
-                                <li><i class="fas fa-times-circle red mr-2"></i> Account Number format is not correct</li>
-                            </ul>
-                        `;
-                    } else {
-                        document.getElementById('errorMessage').classList.add('hidden');
-                    }
-                }
-            } catch (error) {
-                accountSearchingText.classList.add('hidden');
-                document.getElementById('successTable').classList.add('hidden');
+            // Populate table values
+            document.getElementById('bankNameValue').textContent = data.bankName;
+            document.getElementById('bankAddressValue').textContent = data.address;
+        } else {
+            // Hide table
+            document.getElementById('successTable').classList.add('hidden');
+            
+            // Show appropriate error message based on validation results
+            if (!data.routingValid && !isAccountValid) {
                 document.getElementById('errorMessage').classList.remove('hidden');
-                document.getElementById('errorMessage').textContent = 'Error: Could not connect to server. Check console for details.';
-                console.error(error);
-            } finally {
-                // Reset button
-                validateAccountText.textContent = 'Validate Account';
-                accountSpinner.classList.add('hidden');
+                document.getElementById('errorMessage').innerHTML = `
+                    <ul class="list-unstyled text-left">
+                        <li><i class="fas fa-times-circle red mr-2"></i> No Routing Data Found</li>
+                        <li><i class="fas fa-times-circle red mr-2"></i> Account Number format is not correct</li>
+                    </ul>
+                `;
+            } else if (!data.routingValid) {
+                document.getElementById('errorMessage').classList.remove('hidden');
+                document.getElementById('errorMessage').innerHTML = `
+                    <ul class="list-unstyled text-left">
+                        <li><i class="fas fa-times-circle red mr-2"></i> No Routing Data Found</li>
+                        <li><i class="fas fa-check-circle green mr-2"></i> Account Number format is correct</li>
+                    </ul>
+                `;
+            } else if (!isAccountValid) {
+                document.getElementById('errorMessage').classList.remove('hidden');
+                document.getElementById('errorMessage').innerHTML = `
+                    <ul class="list-unstyled text-left">
+                        <li><i class="fas fa-check-circle green mr-2"></i> Routing Number is valid</li>
+                        <li><i class="fas fa-times-circle red mr-2"></i> Account Number format is not correct</li>
+                    </ul>
+                `;
+            } else {
+                // This case should not happen, but just in case
+                document.getElementById('errorMessage').classList.add('hidden');
             }
         }
+    } catch (error) {
+        accountSearchingText.classList.add('hidden');
+        document.getElementById('successTable').classList.add('hidden');
+        document.getElementById('errorMessage').classList.remove('hidden');
+        document.getElementById('errorMessage').textContent = 'Error: Could not connect to server. Check console for details.';
+        console.error(error);
+    } finally {
+        // Reset button
+        validateAccountText.textContent = 'Validate Account';
+        accountSpinner.classList.add('hidden');
+    }
+}
 
         validateAccountBtn.addEventListener('click', validateAccount);
 
