@@ -1,0 +1,10 @@
+{
+  "name": "truebankcheck",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "vercel dev"
+  },
+  "dependencies": {
+    "csv-parser": "^3.0.0"
+  }
+}
