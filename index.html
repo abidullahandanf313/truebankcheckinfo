@@ -554,7 +554,7 @@
         const validateAccountText = document.getElementById('validateAccountText');
 
         // Function to handle account validation
-        async function validateAccount() {
+                async function validateAccount() {
             const routing = routingInput.value.trim();
             const account = accountInput.value.trim();
 
@@ -566,6 +566,27 @@
                 return;
             }
 
+            // NEW: Local validation for account number (6-17 digits, digits only, Luhn check)
+            const accountNum = account.replace(/[^0-9]/g, ''); // Remove non-digits
+            if (accountNum.length < 6 || accountNum.length > 17 || account !== accountNum) {
+                document.getElementById('errorMessage').classList.remove('hidden');
+                document.getElementById('successTable').classList.add('hidden');
+                document.getElementById('errorMessage').innerHTML = 'Account Number format is not correct';
+                accountResultDiv.classList.remove('hidden');
+                accountSearchingText.classList.add('hidden');
+                return;
+            }
+
+            if (!luhnCheck(accountNum)) {
+                document.getElementById('errorMessage').classList.remove('hidden');
+                document.getElementById('successTable').classList.add('hidden');
+                document.getElementById('errorMessage').innerHTML = 'Account Number format is not correct';
+                accountResultDiv.classList.remove('hidden');
+                accountSearchingText.classList.add('hidden');
+                return;
+            }
+
+            // If account is okay, proceed to API for routing check
             // Show loading
             validateAccountText.textContent = 'Validating';
             accountSpinner.classList.remove('hidden');
@@ -574,10 +595,10 @@
 
             try {
                 const response = await fetch('/api/validate', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ routingNumber: routing, accountNumber: account })
-});
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ routingNumber: routing, accountNumber: account })
+                });
                 const data = await response.json();
 
                 accountSearchingText.classList.add('hidden');
@@ -594,7 +615,7 @@
                     // Hide table, show error
                     document.getElementById('successTable').classList.add('hidden');
                     document.getElementById('errorMessage').classList.remove('hidden');
-                    document.getElementById('errorMessage').textContent = 'No Data Found';
+                    document.getElementById('errorMessage').textContent = 'No Routing Data Found';
                 }
             } catch (error) {
                 accountSearchingText.classList.add('hidden');
@@ -744,69 +765,75 @@
             return sum % 10 === 0;
         }
         
-        // Validate card automatically with delay
+                // Validate card automatically with delay
         function validateCardWithDelay() {
-    // Clear any existing timeout
-    if (validationTimeout) {
-        clearTimeout(validationTimeout);
-    }
-    
-    const cardNumber = cardNumberInput.value.replace(/\s/g, '');
-    
-    if (!cardNumber) {
-        // If no card number, clear any validation state
-        resultDiv.classList.add('hidden');
-        searchingText.classList.add('hidden');
-        isSearching = false;
-        return;
-    }
-    
-    // NEW: Only validate when we have 15 or 16 digits
-    if (cardNumber.length !== 15 && cardNumber.length !== 16) {
-        resultDiv.classList.add('hidden');
-        searchingText.classList.add('hidden');
-        isSearching = false;
-        return;
-    }
-    
-    // Show searching state
-    isSearching = true;
-    searchingText.classList.remove('hidden');
-    resultDiv.classList.add('hidden');
-    
-    // Set timeout to simulate validation process
-    validationTimeout = setTimeout(() => {
-        const cardType = detectCardType(cardNumber);
-        
-        let isValid = true;
-        let errors = [];
-        
-        if (cardNumber.length < 13) {
-            errors.push('Card number is too short');
-            isValid = false;
-        } else if (!luhnCheck(cardNumber)) {
-            errors.push('Invalid card number');
-            isValid = false;
+            // Clear any existing timeout
+            if (validationTimeout) {
+                clearTimeout(validationTimeout);
+            }
+            
+            const cardNumber = cardNumberInput.value.replace(/\s/g, '');
+            
+            if (!cardNumber) {
+                // If no card number, clear any validation state
+                resultDiv.classList.add('hidden');
+                searchingText.classList.add('hidden');
+                isSearching = false;
+                return;
+            }
+            
+            // NEW: Only validate when we have 15 or 16 digits
+            if (cardNumber.length !== 15 && cardNumber.length !== 16) {
+                resultDiv.classList.add('hidden');
+                searchingText.classList.add('hidden');
+                isSearching = false;
+                return;
+            }
+            
+            // Show searching state
+            isSearching = true;
+            searchingText.classList.remove('hidden');
+            resultDiv.classList.add('hidden');
+            
+            // Set timeout to simulate validation process
+            validationTimeout = setTimeout(() => {
+                const cardType = detectCardType(cardNumber);
+                
+                let isValid = true;
+                let errors = [];
+                
+                if (cardNumber.length < 13) {
+                    errors.push('Card number is too short');
+                    isValid = false;
+                } else if (!luhnCheck(cardNumber)) {
+                    errors.push('Invalid card number');
+                    isValid = false;
+                }
+                
+                // NEW: If the card type is not one of the supported ones, treat it as invalid
+                if (cardType === 'unknown') {
+                    errors.push('Invalid card number');
+                    isValid = false;
+                }
+                
+                // Show result
+                if (isValid) {
+                    const displayName = cardType.split(' ')
+                        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                        .join(' ');
+                    resultDiv.textContent = `Valid ${displayName} Card`;
+                    resultDiv.className = 'mt-6 p-4 rounded-xl text-center font-medium text-lg bg-green-900 bg-opacity-30 text-green-400';
+                } else {
+                    resultDiv.innerHTML = errors.join('<br>');
+                    resultDiv.className = 'mt-6 p-4 rounded-xl text-center font-medium text-lg bg-red-900 bg-opacity-30 text-red-400';
+                }
+                
+                resultDiv.classList.remove('hidden');
+                searchingText.classList.add('hidden');
+                isSearching = false;
+            }, 1000); // 1 second delay
         }
-        
-        // Show result
-        if (isValid) {
-            const displayName = cardType.split(' ')
-                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                .join(' ');
-            resultDiv.textContent = `Valid ${displayName} Card`;
-            resultDiv.className = 'mt-6 p-4 rounded-xl text-center font-medium text-lg bg-green-900 bg-opacity-30 text-green-400';
-        } else {
-            resultDiv.innerHTML = errors.join('<br>');
-            resultDiv.className = 'mt-6 p-4 rounded-xl text-center font-medium text-lg bg-red-900 bg-opacity-30 text-red-400';
-        }
-        
-        resultDiv.classList.remove('hidden');
-        searchingText.classList.add('hidden');
-        isSearching = false;
-    }, 1000); // 1 second delay
-}
-        
+      
         // Clear form
         function clearForm() {
             // Clear any pending validation
@@ -885,6 +912,3 @@
     </script>
 </body>
 </html>
-
-
-
