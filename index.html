@@ -383,15 +383,22 @@
     <div id="errorMessage" class="bg-red-900 text-red-200 p-4 rounded-xl text-center font-medium hidden"></div>
 </div>
 
-    <div class="footer flex justify-center space-x-6 text-slate-400 z-10">
-        <a href="#" class="policy-link" onclick="showPrivacyPolicy()">
-            <i class="fas fa-lock text-xs"></i>
-            <span>Privacy Policy</span>
-        </a>
-        <a href="#" class="policy-link" onclick="showTermsConditions()">
-            <i class="fas fa-file-alt text-xs"></i>
-            <span>Terms & Conditions</span>
-        </a>
+    <div class="mt-auto py-4">
+        <div class="footer flex justify-center space-x-6 text-slate-400 z-10">
+            <a href="#" class="policy-link" onclick="showPrivacyPolicy()">
+                <i class="fas fa-lock text-xs"></i>
+                <span>Privacy Policy</span>
+            </a>
+            <a href="#" class="policy-link" onclick="showTermsConditions()">
+                <i class="fas fa-file-alt text-xs"></i>
+                <span>Terms & Conditions</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Modals section -->
+    <div id="privacyModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
+        <!-- Modal content -->
     </div>
 
     <!-- Modals (Combined for both tabs) -->
