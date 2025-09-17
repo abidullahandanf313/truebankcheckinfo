@@ -293,7 +293,7 @@
                             id="accountNumber" 
                             maxlength="17" 
                             class="w-full p-4 input-field rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-0"
-                            placeholder="Enter account number"
+                            placeholder="Enter account number (6-17 digits)"
                             autocomplete="off"
                         >
                         <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400" id="accountIcon">
@@ -431,7 +431,7 @@
                 <p>Browser type and version</p>
                 <p>Device type (desktop, tablet, mobile)</p>
                 <p>Operating system</p>
-                <p>General usage data (e.e.g., number of visits, time spent on pages)</p>
+                <p>General usage data (e.g., number of visits, time spent on pages)</p>
                 <p>This information is standard for all websites and helps us keep the site secure and working properly. It cannot be used to identify you personally.</p>
                 
                 <h4 class="font-semibold text-white mt-4">3. Cookies and Analytics</h4>
@@ -560,7 +560,7 @@
             event.target.classList.add('active');
         }
 
-        // Account Validator Script (from index.html)
+        // Account Validator Script
         const validateAccountBtn = document.getElementById('validateAccountBtn');
         const clearAccountBtn = document.getElementById('clearAccountBtn');
         const routingInput = document.getElementById('routingNumber');
@@ -614,7 +614,7 @@
                 
                 // Show error message
                 document.getElementById('errorMessage').classList.remove('hidden');
-                document.getElementById('errorMessage').innerHTML = 'Account Number format is not correct';
+                document.getElementById('errorMessage').innerHTML = 'Account Number format is not correct (must be 6-17 digits)';
                 return;
             }
 
@@ -695,7 +695,7 @@
             document.getElementById('errorMessage').classList.add('hidden');
         });
 
-        // Card Validator Script (Updated to match the provided design)
+        // Card Validator Script
         const cardNumberInput = document.getElementById('cardNumber');
         const cardIcon = document.getElementById('cardIcon');
         const validateBtn = document.getElementById('validateBtn');
@@ -723,7 +723,7 @@
             solo: /^(6334|6767)[0-9]{12,15}$/,
             switch: /^(4903|4905|4911|4936|6333|6759)[0-9]{12,15}$/,
             'visa electron': /^(4026|417500|4508|4844|4913|4917)[0-9]{12}$/,
-            star: /^(5610|560221|560222|560223|560224|560225)[0-9]{10}$/,
+            star: /^(5610|560221|560222|560223|560224|560225)[0-10}$/,
             nyce: /^(6011|6012|6506)[0-9]{12}$/,
             accel: /^(6011|6012|6506)[0-9]{12}$/
         };
