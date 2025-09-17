@@ -598,7 +598,7 @@
             accountResultDiv.classList.remove('hidden');
 
             // Validate account number format (6-17 digits)
-            const accountRegex = /^\d{6-17}$/;
+            const accountRegex = /^\d{6,17}$/;
             const isAccountValid = accountRegex.test(account);
             
             if (isAccountValid) {
