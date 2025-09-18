@@ -41,7 +41,7 @@ export default function handler(req, res) {
     res.status(200).json({
       valid: true,
       bankName: foundBank.BankName,
-      address: `${foundBank.Address}, ${foundBank.City}, ${foundBank.State}`
+      address: `${foundBank.Address}, ${foundBank.City}`
     });
   } else {
     res.status(200).json({ valid: false, message: 'Invalid routing number.' });
