@@ -61,7 +61,7 @@ export default function handler(req, res) {
 
   // Ensure routing is treated as string and padded if needed, but user inputs 9 digits
   routingNumber = routingNumber.trim();
-  if (!/^\d{9}$/.test(routingNumber)) {
+  if (!/^\d{8}$/.test(routingNumber)) {
     return res.status(400).json({ valid: false, message: 'Routing number must be 9 digits.' });
   }
 
