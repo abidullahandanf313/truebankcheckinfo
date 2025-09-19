@@ -1,2 +1,2 @@
-BankName RoutingNumber,Address,City,State
+BankName,RoutingNumber,Address,City,State
 Federal Reserve Bank,011000015,1000 Peachtree St Ne,Atlanta,GA
