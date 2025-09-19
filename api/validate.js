@@ -59,10 +59,10 @@ export default function handler(req, res) {
     return res.status(400).json({ valid: false, message: 'Missing routing or account number.' });
   }
 
-  // Ensure routing is treated as string and padded if needed, but user inputs 9 digits
+  // Ensure routing is treated as string and padded if needed, but user inputs 8 digits
   routingNumber = routingNumber.trim();
   if (!/^\d{8}$/.test(routingNumber)) {
-    return res.status(400).json({ valid: false, message: 'Routing number must be 9 digits.' });
+    return res.status(400).json({ valid: false, message: 'Routing number must be 8 digits.' });
   }
 
   if (!/^\d{6,17}$/.test(accountNumber)) {
