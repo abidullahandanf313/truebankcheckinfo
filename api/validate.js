@@ -65,8 +65,8 @@ export default function handler(req, res) {
     return res.status(400).json({ valid: false, message: 'Routing number must be 9 digits.' });
   }
 
-  if (!/^\d{8,17}$/.test(accountNumber)) {
-    return res.status(400).json({ valid: false, message: 'Account number must be 8-17 digits.' });
+  if (!/^\d{6,17}$/.test(accountNumber)) {
+    return res.status(400).json({ valid: false, message: 'Account number must be 6-17 digits.' });
   }
 
   const foundBank = bankData.find(row => row.RoutingNumber === routingNumber);
